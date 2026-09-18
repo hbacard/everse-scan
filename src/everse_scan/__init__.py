@@ -1,3 +1,3 @@
-"""everse-scan: Analyse de repositories de recherche selon les pratiques EVERSE/RSQKit."""
+"""everse-scan: Research repository analysis tool following EVERSE/RSQKit practices."""
 
 __version__ = "0.5.0"

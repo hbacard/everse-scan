@@ -114,9 +114,9 @@ class TestMarkdownReporter:
         result = scan_repo(str(sample_repo))
         md = generate_markdown(result)
         assert "# EVERSE Scan Report" in md
-        assert "## 1. Résumé exécutif" in md
-        assert "## 2. Plan d'action priorisé" in md
-        assert "## 3. Détails techniques par tâche" in md
+        assert "## 1. Executive Summary" in md
+        assert "## 2. Prioritized Action Plan" in md
+        assert "## 3. Technical Details by Task" in md
         assert "## 4. AI Spectrum Assessment" in md
 
     def test_markdown_has_all_checks(self, sample_repo):
@@ -128,13 +128,13 @@ class TestMarkdownReporter:
     def test_markdown_has_quality_dimensions(self, sample_repo):
         result = scan_repo(str(sample_repo))
         md = generate_markdown(result)
-        assert "Dimensions de qualité" in md
-        assert "Reproductibilité" in md
-        assert "Maintenabilité" in md
+        assert "Quality Dimensions" in md
+        assert "Reproducibility" in md
+        assert "Maintainability" in md
         assert "Findability" in md
 
     def test_markdown_has_tier(self, sample_repo):
         result = scan_repo(str(sample_repo))
         md = generate_markdown(result)
         assert "Tier" in md
-        assert "tier" in md.lower() or "Script" in md or "Outil" in md or "Infrastructure" in md
+        assert "tier" in md.lower() or "Script" in md or "Tool" in md or "Infrastructure" in md

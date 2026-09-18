@@ -57,16 +57,16 @@ def _quality_dimensions(result: ScanResult) -> list[tuple[str, str, str]]:
         return "⚠️"
 
     return [
-        ("Reproductibilité", dim_status(["Packaging", "Tests", "CI/CD"]), "Packaging, Tests, CI/CD"),
-        ("Maintenabilité", dim_status(["Structure", "Documentation", "Readable code"]), "Structure, Documentation, Readable code"),
+        ("Reproducibility", dim_status(["Packaging", "Tests", "CI/CD"]), "Packaging, Tests, CI/CD"),
+        ("Maintainability", dim_status(["Structure", "Documentation", "Readable code"]), "Structure, Documentation, Readable code"),
         ("Findability", dim_status(["CITATION.cff", "codemeta.json", "Software identifiers"]), "CITATION.cff, codemeta.json, Software identifiers"),
         ("Trustworthiness", dim_status(["Tests", "CI/CD", "Version control", "Security"]), "Tests, CI/CD, Version control, Security"),
-        ("Réutilisabilité", dim_status(["LICENSE", "README", "Documentation"]), "LICENSE, README, Documentation"),
+        ("Reusability", dim_status(["LICENSE", "README", "Documentation"]), "LICENSE, README, Documentation"),
     ]
 
 
 def _tier_label(tier: str) -> str:
-    labels = {"script": "Script (tier 1)", "tool": "Outil/Bibliothèque (tier 2)", "infrastructure": "Infrastructure (tier 3)"}
+    labels = {"script": "Script (tier 1)", "tool": "Tool/Library (tier 2)", "infrastructure": "Infrastructure (tier 3)"}
     return labels.get(tier, tier)
 
 
@@ -77,27 +77,27 @@ def _lifecycle_label(stage: str) -> str:
 
 def _ai_guidance(level: int) -> str:
     if level == 0:
-        return ("Aucun usage d'AI détecté. C'est parfaitement valide. Si vous envisagez l'AI, "
-                "commencez par le niveau 1 (conversationnel) pour des tâches ponctuelles. "
-                "Voir [Conversational Interaction](https://everse.software/RSQKit/conversational_interaction).")
+        return ("No AI usage detected. This is perfectly valid. If you are considering AI, "
+                "start with level 1 (conversational) for occasional tasks. "
+                "See [Conversational Interaction](https://everse.software/RSQKit/conversational_interaction).")
     if level <= 3:
-        return ("Usage conversationnel détecté. Bon point de départ. **Risques**: pas de traçabilité du code généré, "
-                "pas de contexte repo. **Qualité**: documentez vos prompts, committez séparément. "
-                "Voir [Cross Cutting Practices](https://everse.software/RSQKit/cross_cutting_practices).")
+        return ("Conversational AI usage detected. Good starting point. **Risks**: no traceability of generated code, "
+                "no repository context. **Quality**: document your prompts, commit separately. "
+                "See [Cross Cutting Practices](https://everse.software/RSQKit/cross_cutting_practices).")
     if level <= 6:
-        return ("Assistant IDE/repo détecté. **Risques**: confiance excessive dans le contexte repo, "
-                "hallucinations sur API. **Qualité**: ajoutez des garde-fous dans les règles, "
-                "maintenez des tests comme filet. "
-                "Voir [Repository-aware assistance](https://everse.software/RSQKit/repository_aware_assistance).")
+        return ("IDE/repo-aware assistant detected. **Risks**: over-reliance on repository context, "
+                "API hallucinations. **Quality**: add guardrails to rules, "
+                "maintain tests as a safety net. "
+                "See [Repository-aware assistance](https://everse.software/RSQKit/repository_aware_assistance).")
     if level <= 9:
-        return ("Agents CI/PR détectés. **Risques**: blast radius élevé, modifications automatisées sans revue. "
-                "**Qualité**: exigez une revue humaine obligatoire, limitez les permissions du bot, "
-                "ajoutez des tests de non-régression. "
-                "Voir [CI/PR/repository agents](https://everse.software/RSQKit/ci_pr_repository_agents).")
-    return ("Agents autonomes détectés. **Risque maximal**: conséquences difficiles à prévoir, "
-            "volume de modifications élevé. **Qualité**: garde-fous stricts obligatoires — "
-            "tests exhaustifs, rollback automatique, monitoring. "
-            "Voir [Open-ended autonomous agents](https://everse.software/RSQKit/open_ended_autonomous_agents).")
+        return ("CI/PR agents detected. **Risks**: high blast radius, automated changes without review. "
+                "**Quality**: require mandatory human review, limit bot permissions, "
+                "add non-regression tests. "
+                "See [CI/PR/repository agents](https://everse.software/RSQKit/ci_pr_repository_agents).")
+    return ("Autonomous agents detected. **Maximum risk**: consequences hard to predict, "
+            "high volume of changes. **Quality**: strict guardrails required — "
+            "exhaustive tests, automatic rollback, monitoring. "
+            "See [Open-ended autonomous agents](https://everse.software/RSQKit/open_ended_autonomous_agents).")
 
 
 def generate_markdown(result: ScanResult) -> str:
@@ -121,125 +121,125 @@ def generate_markdown(result: ScanResult) -> str:
     lines.append("")
 
     # 1. Executive summary
-    lines.append("## 1. Résumé exécutif")
+    lines.append("## 1. Executive Summary")
     lines.append("")
 
     strong = [c for c in result.checks if c.status == CheckStatus.PASS]
     weak = [c for c in result.checks if c.status in (CheckStatus.WARN, CheckStatus.FAIL)]
 
-    lines.append("### Points forts")
+    lines.append("### Strengths")
     if strong:
         for c in strong:
             lines.append(f"- **{c.name}**: {c.message}")
     else:
-        lines.append("- Aucun check passé")
+        lines.append("- No checks passed")
     lines.append("")
 
-    lines.append("### Points faibles")
+    lines.append("### Weaknesses")
     if weak:
         for c in weak:
             lines.append(f"- **{c.name}**: {c.message}")
     else:
-        lines.append("- Aucun point faible détecté")
+        lines.append("- No weaknesses detected")
     lines.append("")
 
     # Conformity table
-    lines.append("### Conformité globale")
+    lines.append("### Overall Compliance")
     lines.append("")
-    lines.append("| Check | Statut |")
+    lines.append("| Check | Status |")
     lines.append("|-------|--------|")
     for c in result.checks:
         lines.append(f"| {c.name} | {STATUS_ICONS[c.status]} |")
     lines.append("")
 
     # Quality dimensions
-    lines.append("### Dimensions de qualité (mapping RSQKit)")
+    lines.append("### Quality Dimensions (RSQKit mapping)")
     lines.append("")
-    lines.append("> Source : https://everse.software/RSQKit/all_indicators")
+    lines.append("> Source: https://everse.software/RSQKit/all_indicators")
     lines.append("")
-    lines.append("| Dimension | Score | Checks impliqués |")
+    lines.append("| Dimension | Score | Checks involved |")
     lines.append("|---|---|---|")
     for dim_name, score, checks_list in _quality_dimensions(result):
         lines.append(f"| {dim_name} | {score} | {checks_list} |")
     lines.append("")
 
     # Tier
-    lines.append("### Tier de logiciel détecté")
+    lines.append("### Detected Software Tier")
     lines.append(f"**Tier**: {_tier_label(result.tier)}")
     lines.append(f"**Justification**: {result.tier_justification}")
     if result.tier_checks_adjusted:
-        lines.append(f"**Checks ajustés**: {', '.join(result.tier_checks_adjusted)}")
+        lines.append(f"**Adjusted checks**: {', '.join(result.tier_checks_adjusted)}")
     lines.append("")
 
     # Lifecycle
-    lines.append("### Stage de lifecycle détecté")
+    lines.append("### Detected Lifecycle Stage")
     lines.append(f"**Stage**: {_lifecycle_label(result.lifecycle)}")
     lines.append(f"**Justification**: {result.lifecycle_justification}")
     lines.append("")
 
     # Disclosure
-    lines.append("### Tâches non évaluées")
+    lines.append("### Non-evaluated Tasks")
     lines.append("")
-    lines.append(f"> ⚠️ Ce scan évalue {result.total} des 35+ tâches RSQKit. "
-                 f"Les tâches suivantes ne sont **pas** évaluées :")
+    lines.append(f"> ⚠️ This scan evaluates {result.total} of the 35+ RSQKit tasks. "
+                 f"The following tasks are **not** evaluated:")
     lines.append(">")
     for name, url in UNCOVERED_TASKS:
         lines.append(f"> - [{name}]({url})")
-    lines.append("> - ... (voir [liste complète](https://everse.software/RSQKit/tasks))")
+    lines.append("> - ... (see [complete list](https://everse.software/RSQKit/tasks))")
     lines.append("")
     lines.append("---")
     lines.append("")
 
     # 2. Action plan
-    lines.append("## 2. Plan d'action priorisé")
+    lines.append("## 2. Prioritized Action Plan")
     lines.append("")
-    lines.append("> Priorisation par effort × impact. L'impact facture le risque, le tier, le lifecycle et le rôle cible.")
+    lines.append("> Prioritization by effort × impact. Impact factors in risk, tier, lifecycle, and target role.")
     lines.append("")
 
     critical = [c for c in result.checks if c.status == CheckStatus.FAIL and c.category == "security"]
     fails = [c for c in result.checks if c.status == CheckStatus.FAIL and c.category != "security"]
     warns = [c for c in result.checks if c.status == CheckStatus.WARN]
 
-    lines.append("### Risques critiques (à traiter en priorité si détectés)")
+    lines.append("### Critical Risks (address first if detected)")
     if critical:
         for c in critical:
-            lines.append(f"1. 🔴 {c.message} — **impact: critique** ({c.rsqkit_url})")
+            lines.append(f"1. 🔴 {c.message} — **impact: critical** ({c.rsqkit_url})")
     else:
-        lines.append("- Aucun risque critique détecté")
+        lines.append("- No critical risks detected")
     lines.append("")
 
-    lines.append("### Quick wins (faible effort, impact élevé)")
+    lines.append("### Quick Wins (low effort, high impact)")
     quick_wins = [c for c in fails if c.category == "fair"]
     if quick_wins:
         for c in quick_wins:
             rec = c.recommendations[0] if c.recommendations else "Fix this issue"
-            lines.append(f"1. {rec} (cf. {c.rsqkit_url}) — **impact: élevé**")
+            lines.append(f"1. {rec} (cf. {c.rsqkit_url}) — **impact: high**")
     elif warns:
         for c in warns[:3]:
             rec = c.recommendations[0] if c.recommendations else "Improve this check"
-            lines.append(f"1. {rec} (cf. {c.rsqkit_url}) — **impact: modéré**")
+            lines.append(f"1. {rec} (cf. {c.rsqkit_url}) — **impact: moderate**")
     else:
-        lines.append("- Aucun quick win nécessaire")
+        lines.append("- No quick wins needed")
     lines.append("")
 
-    lines.append("### Moyen terme (effort modéré, impact modéré)")
+    lines.append("### Medium Term (moderate effort, moderate impact)")
     remaining_warns = [c for c in warns if c not in (warns[:3] if not quick_wins else [])]
     if remaining_warns:
         for c in remaining_warns[:5]:
             rec = c.recommendations[0] if c.recommendations else "Improve this check"
             lines.append(f"1. {rec} (cf. {c.rsqkit_url})")
     else:
-        lines.append("- Rien à signaler")
+        lines.append("- Nothing to report")
     lines.append("")
 
-    lines.append("### Long terme (effort élevé, impact structurel)")
+    lines.append("### Long Term (high effort, structural impact)")
     long_term = [c for c in fails if c.category != "fair"]
     if long_term:
         for c in long_term:
             rec = c.recommendations[0] if c.recommendations else "Fix this issue"
             lines.append(f"1. {rec} (cf. {c.rsqkit_url})")
     else:
-        lines.append("- Rien à signaler")
+        lines.append("- Nothing to report")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -260,19 +260,19 @@ def generate_markdown(result: ScanResult) -> str:
         lines.append("")
 
     # 3. Technical details
-    lines.append("## 3. Détails techniques par tâche")
+    lines.append("## 3. Technical Details by Task")
     lines.append("")
     for i, c in enumerate(result.checks, 1):
         lines.append(f"### 3.{i} {c.name}")
-        lines.append(f"**Statut**: {STATUS_ICONS[c.status]}")
+        lines.append(f"**Status**: {STATUS_ICONS[c.status]}")
         lines.append(f"**RSQKit**: {c.rsqkit_url}")
         lines.append("")
-        lines.append("**Constats**:")
+        lines.append("**Findings**:")
         for d in c.details:
             lines.append(f"- {d}")
         lines.append("")
         if c.recommendations:
-            lines.append("**Recommandations**:")
+            lines.append("**Recommendations**:")
             for r in c.recommendations:
                 lines.append(f"- {r}")
             lines.append("")
@@ -282,25 +282,25 @@ def generate_markdown(result: ScanResult) -> str:
     # 4. AI Spectrum
     lines.append("## 4. AI Spectrum Assessment")
     lines.append("")
-    lines.append(f"**Position actuelle estimée**: Niveau {result.ai_intensity} / 10")
+    lines.append(f"**Estimated current position**: Level {result.ai_intensity} / 10")
     lines.append("")
-    lines.append("**Analyse**:")
+    lines.append("**Analysis**:")
     if result.ai_indicators:
         for ind in result.ai_indicators:
             lines.append(f"- {ind}")
     else:
-        lines.append("- Aucun indicateur AI trouvé")
+        lines.append("- No AI indicators found")
     lines.append("")
     lines.append("**Guidance**:")
     lines.append(_ai_guidance(result.ai_intensity))
     lines.append("")
-    lines.append("**Cross-cutting practices** (applicables à tous les niveaux):")
-    lines.append("- Toujours relire le code généré par AI avant commit")
-    lines.append("- Garder le code AI dans des commits séparés pour l'auditabilité")
-    lines.append("- Documenter quels outils AI sont utilisés et comment")
-    lines.append("- Maintenir la capacité de rollback (version control + tests)")
+    lines.append("**Cross-cutting practices** (applicable to all levels):")
+    lines.append("- Always review AI-generated code before committing")
+    lines.append("- Keep AI-generated code in separate commits for auditability")
+    lines.append("- Document which AI tools are used and how")
+    lines.append("- Maintain rollback capability (version control + tests)")
     lines.append("")
-    lines.append("**Références RSQKit**:")
+    lines.append("**RSQKit References**:")
     lines.append("- https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage")
     lines.append("- https://everse.software/RSQKit/cross_cutting_practices")
     lines.append("- https://everse.software/RSQKit/ai_intensity_considerations")
