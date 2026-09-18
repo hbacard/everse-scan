@@ -1,61 +1,94 @@
 # everse-scan
 
-Outil d'analyse de repositories de recherche qui génère un rapport structuré sur la qualité et la conformité du logiciel aux pratiques EVERSE/RSQKit.
+Scan your research software repository and get a structured quality and FAIR compliance report based on EVERSE/RSQKit best practices.
 
-> "Scanne mon repo, fais-moi un rapport structuré sur les points à améliorer en suivant les pratiques d'EVERSE dans le RSQKit."
+## Badges
 
-## Statut
+![Version](https://img.shields.io/badge/version-0.5.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 
-**v0.5.0** — CLI Python complet avec 36 checks déterministes (35+ tâches RSQKit), intégrations FAIR optionnelles (+7 checks), détection de funder avec conformité, rapport adaptatif par rôle, re-scan avec diff, priorisation 2D, tier et lifecycle detection, sortie JSON + Markdown. 99 tests.
+## What is everse-scan?
 
-## Installation
+`everse-scan` is a command-line tool that analyzes research software repositories and generates a structured report on software quality and FAIR compliance. It checks your project against 36 best-practice checks derived from the [RSQKit](https://everse.software/RSQKit/) catalogue maintained by the [EVERSE](https://everse.software/) research software engineering community.
+
+**Who is it for?**
+
+- **Researchers who write code** — make sure your project is citable, reproducible, and follows good practices before publication.
+- **Research Software Engineers (RSEs)** — get a quick audit of a repository's engineering quality, CI/CD, testing, and documentation.
+- **Funded projects** — check alignment with funder requirements (Horizon Europe, NSF, Wellcome, DFG, ANR, UKRI, Helmholtz).
+
+`everse-scan` is a standalone CLI tool. It does not require an AI assistant to run — it produces deterministic, reproducible reports. But it works great alongside one (see [Using with AI assistants](#using-with-ai-assistants)).
+
+## Key features
+
+- **36 deterministic checks** covering 35+ RSQKit tasks (README, LICENSE, CITATION.cff, codemeta.json, tests, CI/CD, security, and more)
+- **7 optional FAIR integrations** via `--use` (howfairis, cffconvert, codemeta validator)
+- **Funder compliance detection** — automatically detects your funder and checks alignment with its requirements
+- **Adaptive reporting** — switch between `researcher` and `rse` views with `--role`
+- **Re-scan with diff** — track progress between scans with `--save` and `--diff`
+- **2D prioritization** — action plan sorted by effort x impact, factoring in tier, lifecycle, and role
+- **Multi-language detection** — Python, R, C++, Julia, JS/TS, Rust, Go, Java, Ruby
+- **Tier & lifecycle awareness** — adapts checks to whether your project is a script, a tool/library, or infrastructure
+- **JSON + Markdown output** — machine-readable and human-readable formats
+
+## Quick start
 
 ```bash
 pip install -e .
+everse-scan ./my-repo
 ```
 
-Ou avec `uv` :
+Or with `uv`:
 
 ```bash
 uv pip install -e ".[dev]"
+everse-scan ./my-repo
 ```
 
 ## Usage
 
-### Scan basique
+### Basic scan
 
 ```bash
-# Sortie Markdown (défaut)
-everse-scan ./repo
+# Markdown report to stdout (default)
+everse-scan ./my-repo
 
-# Sortie JSON
-everse-scan ./repo --format json
+# JSON output
+everse-scan ./my-repo --format json
 
-# Les deux formats
-everse-scan ./repo --format both -o report
+# Both formats, saved to files
+everse-scan ./my-repo --format both -o report
 ```
 
-### Rapport adaptatif par rôle
+### Scan a GitHub repository
 
 ```bash
-# Vue researcher (langage simple, citation/credit d'abord)
-everse-scan ./repo --role researcher
-
-# Vue RSE (technique, engineering d'abord)
-everse-scan ./repo --role rse
+everse-scan https://github.com/org/repo
 ```
 
-### Re-scan avec diff
+### Role-adaptive reports
 
 ```bash
-# 1. Sauvegarder un baseline
-everse-scan ./repo --save baseline.json --format json
+# Researcher view: plain language, credit/citation first
+everse-scan ./my-repo --role researcher
 
-# 2. Après corrections, comparer avec le baseline
-everse-scan ./repo --diff baseline.json
+# RSE view: technical, engineering-first
+everse-scan ./my-repo --role rse
 ```
 
-Exemple de sortie de diff :
+### Track progress with re-scan diff
+
+```bash
+# 1. Save a baseline
+everse-scan ./my-repo --save baseline.json --format json
+
+# 2. After making fixes, compare
+everse-scan ./my-repo --diff baseline.json
+```
+
+Example diff output:
 
 ```
 Progress: 7/36 (was 4/36), delta +3
@@ -66,60 +99,104 @@ Progress: 7/36 (was 4/36), delta +3
 - CI/CD: FAIL -> PASS
 ```
 
-### Intégrations FAIR
+### FAIR integrations
 
 ```bash
-# Activer howfairis, cffconvert, codemeta validator (+7 checks)
-everse-scan ./repo --use
+# Enable all FAIR integrations (+7 checks)
+everse-scan ./my-repo --use
 
-# Ou spécifier une intégration particulière
-everse-scan ./repo --use howfairis
+# Enable a specific integration
+everse-scan ./my-repo --use howfairis
 ```
 
-### Scan d'un repo GitHub
+### Funder compliance
+
+Funder detection is automatic — everse-scan scans your `.zenodo.json`, `CITATION.cff`, `README.md`, and `pyproject.toml` for funder mentions and grant IDs, then checks alignment with that funder's requirements.
 
 ```bash
-everse-scan https://github.com/org/repo --format markdown
+# Just run a normal scan — funder detection is built-in
+everse-scan ./my-repo
 ```
 
-### Options
+Supported funders: Horizon Europe, NSF, Wellcome, DFG, ANR, UKRI, Helmholtz.
+
+### Options reference
 
 | Option | Description |
 |--------|-------------|
-| `--format {json,markdown,both}` | Format de sortie (défaut: markdown) |
-| `--output, -o` | Fichier de sortie |
-| `--role {default,researcher,rse}` | Adapter le rapport à un rôle |
-| `--save BASELINE` | Sauvegarder le scan comme baseline |
-| `--diff BASELINE` | Comparer avec un baseline précédent |
-| `--use [INTEGRATIONS]` | Activer les intégrations FAIR |
-| `--version` | Afficher la version |
+| `--format {json,markdown,both}` | Output format (default: markdown) |
+| `--output, -o` | Output file prefix |
+| `--role {default,researcher,rse}` | Adapt report to a target role |
+| `--save BASELINE` | Save scan results as a baseline JSON file |
+| `--diff BASELINE` | Compare current scan with a previous baseline |
+| `--use [INTEGRATIONS]` | Enable FAIR integrations (howfairis, cffconvert, codemeta) |
+| `--version` | Show version |
 
-### Skill opencode
+## Using with AI assistants
 
-everse-scan est aussi disponible comme skill opencode. Il se déclenche naturellement :
+`everse-scan` works in two modes:
 
-- "Scanne mon repo"
-- "Analyse la qualité de mon code"
-- "Vérifie si mon projet respecte les pratiques FAIR"
-- "Fais un audit EVERSE de mon repo"
+### 1. Standalone CLI (no AI required)
 
-## Ce que fait everse-scan
+Run the scan, get a report, fix issues yourself:
 
-- Scanne un repo local ou distant (GitHub)
-- Détecte les langages (Python, R, C++, Julia, JS/TS, Rust, Go, Java, Ruby)
-- Évalue 36 checks déterministes couvrant 35+ tâches RSQKit
-- Détecte le tier (script / outil-bibliothèque / infrastructure)
-- Détecte le lifecycle (early / active dev / maintenance / published)
-- Détecte le funder (Horizon Europe, NSF, Wellcome, DFG, ANR, UKRI, Helmholtz)
-- Vérifie la conformité aux exigences du funder détecté
-- Évalue la position sur le spectrum AI (0-10)
-- Génère un rapport structuré avec résumé exécutif, dimensions de qualité, plan d'action priorisé (effort x impact), détails techniques, guidance AI, conformité funder
-- Rapport adaptatif par rôle (researcher / RSE)
-- Re-scan avec diff de progression
+```bash
+everse-scan ./my-repo -o report
+```
 
-## Les 36 checks
+### 2. CLI + AI assistant for remediation
 
-### Core checks (M3 — 17 checks)
+Generate a report, then hand it to an AI coding assistant to help you fix the identified issues. This works with any AI assistant that can read files:
+
+**With opencode:**
+
+```bash
+# Generate the report
+everse-scan ./my-repo -o report.md
+
+# Then in your opencode session:
+# "Read report.md and help me fix the failing checks"
+```
+
+everse-scan is also available as an **opencode skill** — it triggers naturally when you ask:
+
+- "Scan my repo"
+- "Analyze my code quality"
+- "Check if my project follows FAIR practices"
+- "Run an EVERSE audit on my repo"
+
+**With Claude Code, Copilot, Cursor, or VS Code AI:**
+
+```bash
+# Generate the report
+everse-scan ./my-repo -o report.md
+
+# Then ask your assistant:
+# "Read report.md and help me fix the issues, starting with the quick wins"
+```
+
+**With GitHub Actions (CI/CD):**
+
+```yaml
+# .github/workflows/everse-scan.yml
+name: everse-scan
+on: [push, pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install everse-scan
+      - run: everse-scan . --format markdown -o scan-report
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan-report
+          path: scan-report.md
+```
+
+## Checks overview
+
+### Core checks (17)
 
 | # | Check | RSQKit |
 |---|---|---|
@@ -141,9 +218,9 @@ everse-scan est aussi disponible comme skill opencode. Il se déclenche naturell
 | 16 | Releasing | [releasing_software](https://everse.software/RSQKit/releasing_software) |
 | 17 | Readable code | [writing_readable_code](https://everse.software/RSQKit/writing_readable_code) |
 
-### Extended checks (M5 — 19 checks)
+### Extended checks (19)
 
-| # | Check | Catégorie |
+| # | Check | Category |
 |---|---|---|
 | 18 | Authorship | FAIR |
 | 19 | ORCID | FAIR |
@@ -165,7 +242,7 @@ everse-scan est aussi disponible comme skill opencode. Il se déclenche naturell
 | 35 | Software peer review | Quality |
 | 36 | Software quality models | Quality |
 
-### FAIR integrations (M5 — +7 checks with `--use`)
+### FAIR integrations (+7 with `--use`)
 
 | Check | Source |
 |-------|--------|
@@ -181,56 +258,45 @@ everse-scan est aussi disponible comme skill opencode. Il se déclenche naturell
 
 ```
 src/everse_scan/
-├── cli.py              # CLI entry point (argparse)
-├── scanner.py          # Orchestration du scan
+├── cli.py              # CLI entry point
+├── scanner.py          # Scan orchestration
 ├── models.py           # CheckResult, ScanResult, CheckStatus
-├── priorities.py        # Priorisation 2D (effort x impact)
-├── checks/             # 17 core checks + 19 extended checks
-│   ├── readme.py
-│   ├── license.py
-│   ├── ...
-│   └── extended.py      # 19 checks étendus (M5)
+├── priorities.py       # 2D prioritization (effort x impact)
+├── checks/             # 17 core + 19 extended checks
 ├── reporters/          # JSON, Markdown, Adaptive, Diff, Funder
-│   ├── json.py
-│   ├── markdown.py
-│   ├── adaptive.py      # Rapport par rôle (--role)
-│   ├── diff.py          # Re-scan avec diff (--save/--diff)
-│   └── funder.py        # Conformité funder
 ├── integrations/       # howfairis, cffconvert, codemeta
-├── knowledge/          # rsqkit.py (35+ tasks), funders.py (funder profiles)
-├── languages/          # Détection multi-langage
+├── knowledge/          # RSQKit tasks, funder profiles
+├── languages/          # Multi-language detection
 └── context/            # Tier, Lifecycle, Funder detection
-    ├── tier.py
-    ├── lifecycle.py
-    └── funder.py
 ```
 
-## Développement
+## Development
 
 ```bash
-# Installer en mode dev
+# Install in dev mode
 uv pip install -e ".[dev]"
 
-# Lancer les tests
+# Run tests
 python3 -m pytest tests/ -v
 
-# Lancer un scan sur le repo lui-même
+# Scan everse-scan itself
 everse-scan . --format both -o report
 ```
 
 ## Roadmap
 
-| Milestone | Statut | Description |
-|---|---|---|
-| **M1** | Done | Skill opencode V1 (MVP) — 10 checks, rapport Markdown |
-| **M2** | Done | V1.1 — Tier, lifecycle, outils par langage, remédiation contextuelle |
-| **M3** | Done | CLI Python V2 — 17 checks déterministes, JSON + Markdown |
-| **M4** | Done | Rapport adaptatif par rôle, re-scan avec diff, priorisation 2D |
-| **M5** | Done | Intégrations FAIR (howfairis, cffconvert, codemeta), 35+ tâches RSQKit |
-| **M6** | Done | Funder compliance, détection de grants, conformité funder |
+| Status | Feature |
+|--------|---------|
+| Done | Core CLI with 36 deterministic checks |
+| Done | Adaptive reports by role (researcher / RSE) |
+| Done | Re-scan with diff and baseline tracking |
+| Done | FAIR integrations (howfairis, cffconvert, codemeta) |
+| Done | Funder compliance detection (7 funders) |
+| Planned | PyPI publication |
+| Planned | Additional funder profiles |
+| Planned | RSQKit knowledge base auto-sync |
+| Planned | Additional language support |
 
-Voir [_docs/plan.md](_docs/plan.md) pour le plan complet.
-
-## Licence
+## License
 
 MIT
