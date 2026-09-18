@@ -1,0 +1,23 @@
+[project]
+name = "everse-scan"
+version = "0.1.0"
+description = "Outil d'analyse de repositories de recherche : génère un rapport structuré sur la qualité et la conformité du logiciel aux pratiques EVERSE/RSQKit"
+authors = [
+    {name = "Hugo",email = "hugo.bacard@ijclab.in2p3.fr"},
+]
+dependencies = []
+requires-python = ">=3.12,<3.14"
+readme = "README.md"
+license = {text = "MIT"}
+keywords = ["everse", "rsqkit", "fair", "research-software", "quality", "scan"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+
+[tool.pdm]
+distribution = false
