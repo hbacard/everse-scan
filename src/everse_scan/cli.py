@@ -54,6 +54,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Compare current scan with a previously saved baseline and show progress",
     )
     parser.add_argument(
+        "--use",
+        nargs="*",
+        default=None,
+        metavar="INTEGRATION",
+        help="Enable external integrations (howfairis, cffconvert, codemeta). Use without args for all.",
+    )
+
+    parser.add_argument(
         "--version",
         action="version",
         version=f"everse-scan {__version__}",
@@ -77,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
                 capture_output=True,
                 timeout=60,
             )
-            result = scan_repo(clone_path)
+            result = scan_repo(clone_path, use_integrations=args.use is not None)
         finally:
             import shutil
             shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -85,7 +93,7 @@ def main(argv: list[str] | None = None) -> int:
         if not Path(repo_path).exists():
             print(f"Error: repository path '{repo_path}' does not exist", file=sys.stderr)
             return 1
-        result = scan_repo(repo_path)
+        result = scan_repo(repo_path, use_integrations=args.use is not None)
 
     # Save baseline if requested
     if args.save:

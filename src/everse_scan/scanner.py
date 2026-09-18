@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from everse_scan.models import CheckResult, CheckStatus, ScanResult
 from everse_scan.languages.detector import detect_languages, LanguageInfo
@@ -27,6 +28,27 @@ from everse_scan.checks.code_review import check_code_review
 from everse_scan.checks.software_identifiers import check_software_identifiers
 from everse_scan.checks.releasing import check_releasing
 from everse_scan.checks.readable_code import check_readable_code
+from everse_scan.checks.extended import (
+    check_authorship,
+    check_orcid,
+    check_dependency_management,
+    check_containers,
+    check_workflow_files,
+    check_api_docs,
+    check_changelog,
+    check_contribution_guide,
+    check_code_of_conduct,
+    check_issue_templates,
+    check_secret_management,
+    check_data_management,
+    check_reproducibility_checklist,
+    check_archiving,
+    check_future_proofing,
+    check_sustainability_plan,
+    check_env_sustainability,
+    check_software_peer_review,
+    check_quality_model,
+)
 
 
 AI_INDICATORS_FILES = [
@@ -68,8 +90,16 @@ def _detect_ai_intensity(repo_path: str) -> tuple[int, list[str]]:
     return level, indicators
 
 
-def scan_repo(repo_path: str) -> ScanResult:
-    """Run the full scan on a repository."""
+def scan_repo(
+    repo_path: str,
+    use_integrations: bool = False,
+) -> ScanResult:
+    """Run the full scan on a repository.
+
+    Args:
+        repo_path: Path to the repository to scan.
+        use_integrations: If True, run external tool integrations (howfairis, cffconvert, codemeta).
+    """
     path = Path(repo_path).resolve()
     repo_name = path.name
 
@@ -85,10 +115,11 @@ def scan_repo(repo_path: str) -> ScanResult:
     # AI intensity
     ai_level, ai_indicators = _detect_ai_intensity(str(path))
 
-    # Run all 17 checks
+    # Run all 17 core checks + 18 extended checks = 35 total
     checks: list[CheckResult] = []
     lang = lang_info.primary
 
+    # Core checks (M3)
     checks.append(check_readme(str(path)))
     checks.append(check_license(str(path)))
     checks.append(check_citation(str(path)))
@@ -107,10 +138,45 @@ def scan_repo(repo_path: str) -> ScanResult:
     checks.append(check_releasing(str(path)))
     checks.append(check_readable_code(str(path), lang))
 
+    # Extended checks (M5)
+    checks.append(check_authorship(str(path)))
+    checks.append(check_orcid(str(path)))
+    checks.append(check_dependency_management(str(path)))
+    checks.append(check_containers(str(path)))
+    checks.append(check_workflow_files(str(path)))
+    checks.append(check_api_docs(str(path)))
+    checks.append(check_changelog(str(path)))
+    checks.append(check_contribution_guide(str(path)))
+    checks.append(check_code_of_conduct(str(path)))
+    checks.append(check_issue_templates(str(path)))
+    checks.append(check_secret_management(str(path)))
+    checks.append(check_data_management(str(path)))
+    checks.append(check_reproducibility_checklist(str(path)))
+    checks.append(check_archiving(str(path)))
+    checks.append(check_future_proofing(str(path)))
+    checks.append(check_sustainability_plan(str(path)))
+    checks.append(check_env_sustainability(str(path)))
+    checks.append(check_software_peer_review(str(path)))
+    checks.append(check_quality_model(str(path)))
+
+    # Run integrations if requested
+    if use_integrations:
+        from everse_scan.integrations.howfairis import check_howfairis
+        from everse_scan.integrations.cffconvert import check_cffconvert
+        from everse_scan.integrations.codemeta import check_codemeta_validation
+
+        checks.extend(check_howfairis(str(path)))
+        checks.append(check_cffconvert(str(path)))
+        checks.append(check_codemeta_validation(str(path)))
+
     # Adjust checks for tier 1 (script)
     if tier_result.is_script:
+        na_checks = ("codemeta.json", "CI/CD", "Packaging", "API documentation",
+                      "Computational workflows", "Software sustainability plan",
+                      "Environmental sustainability", "Software peer review",
+                      "Software quality model", "Containerization")
         for check in checks:
-            if check.name in ("codemeta.json", "CI/CD", "Packaging"):
+            if check.name in na_checks:
                 check.status = CheckStatus.NA
                 check.message = f"N/A for tier 1 (script): {check.message}"
 
