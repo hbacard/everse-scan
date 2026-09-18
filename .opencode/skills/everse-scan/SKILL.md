@@ -4,8 +4,9 @@ description: >-
   Scanne un dépôt de code (local ou distant GitHub) et génère un rapport structuré
   sur la qualité et la conformité du logiciel aux pratiques EVERSE/RSQKit. Évalue 10
   checks clés (README, LICENSE, CITATION.cff, codemeta.json, structure, version control,
-  tests, documentation, CI/CD, packaging), détecte le langage, évalue le spectrum AI,
-  et propose des actions de remédiation. Se déclenche sur des demandes comme
+  tests, documentation, CI/CD, packaging), détecte le langage et le tier de logiciel,
+  évalue le stage de lifecycle, le spectrum AI, les dimensions de qualité, et propose
+  des actions de remédiation contextuelles. Se déclenche sur des demandes comme
   "scanne mon repo", "analyse la qualité de mon code", "vérifie les pratiques FAIR",
   "audit EVERSE", "everse-scan", ou toute demande d'analyse de qualité/conformité d'un
   dépôt logiciel de recherche.
@@ -67,26 +68,38 @@ Détecter le ou les langages principaux du repo en analysant :
 
 Le rapport indique le langage principal (le plus de fichiers) et les langages secondaires détectés.
 
-### Étape 3 — Exécuter les 10 checks
+### Étape 3 — Détection du tier (three-tier model)
 
-Pour chaque check, utiliser les outils disponibles (Glob, Grep, Read, Bash) pour examiner le repo. Voir la section **Référentiel des 10 checks** ci-dessous pour les critères détaillés.
+Le RSQKit définit un [modèle à trois tiers](https://everse.software/RSQKit/three_tier_view) : **scripts** → **outils/prototypes** → **infrastructure**. Un script d'analyse jetable et un framework HPC publié n'ont pas besoin des mêmes pratiques. Détecter le tier via des heuristiques (voir la section **Détection du tier** ci-dessous) et **adapter les checks pertinents**.
+
+### Étape 4 — Détection du lifecycle
+
+Détecter le [stage de lifecycle](https://everse.software/RSQKit/life_cycle) du repo (early / active dev / maintenance / published) via des heuristiques (voir la section **Détection du lifecycle** ci-dessous). Le lifecycle influence les recommandations priorisées.
+
+### Étape 5 — Exécuter les 10 checks
+
+Pour chaque check, utiliser les outils disponibles (Glob, Grep, Read, Bash) pour examiner le repo. Voir la section **Référentiel des 10 checks** ci-dessous pour les critères détaillés. Adapter les checks selon le tier détecté (certains checks sont supprimés ou atténués pour les scripts).
 
 Pour chaque check, déterminer un statut :
 - **PASS** : le check est satisfait
 - **WARN** : partiellement satisfait, améliorations nécessaires
 - **FAIL** : non satisfait ou absent
 
-### Étape 4 — Évaluation AI spectrum
+### Étape 6 — Évaluation AI spectrum
 
-Évaluer la position du repo sur le spectrum d'intensité AI du RSQKit (0-10). Voir la section **AI Spectrum Assessment** ci-dessous.
+Évaluer la position du repo sur le spectrum d'intensité AI du RSQKit (0-10). Voir la section **AI Spectrum Assessment** ci-dessous. Le rapport inclut la guidance RSQKit associée au niveau détecté, pas juste le numéro.
 
-### Étape 5 — Générer le rapport
+### Étape 7 — Évaluer les dimensions de qualité
+
+Calculer un scorecard par dimension de qualité (voir la section **Dimensions de qualité** ci-dessous). Les dimensions sont : reproductibilité, maintenabilité, findability, trustworthiness, réutilisabilité.
+
+### Étape 8 — Générer le rapport
 
 Générer le rapport en suivant strictement la structure du **Template de rapport** ci-dessous. Le rapport est écrit en Markdown et sauvegardé dans `everse-scan-report.md` à la racine du repo analysé (ou affiché si l'utilisateur préfère).
 
-### Étape 6 — Menu de remédiation
+### Étape 9 — Menu de remédiation
 
-À la fin du rapport, proposer un menu interactif simple listant les fichiers qui pourraient être générés pour corriger les problèmes identifiés. Voir la section **Menu de remédiation** ci-dessous.
+À la fin du rapport, proposer un menu interactif listant les fichiers à générer (pré-remplis depuis le repo) et les chaînes de remédiation disponibles. Voir la section **Remédiation contextuelle et chaînes** ci-dessous.
 
 ---
 
@@ -109,6 +122,9 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 **Recommandations types** :
 - Si FAIL : créer un README.md minimal (nom du projet, description brève, installation, usage, licence)
 - Si WARN : compléter les sections manquantes
+
+**Outils RSQKit recommandés** (selon langage) :
+- Voir la section **Table des outils RSQKit par langage** — ligne "Docs"
 
 ---
 
@@ -147,7 +163,7 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 - **FAIL** : Aucun fichier CITATION.cff
 
 **Recommandations types** :
-- Si FAIL : créer un CITATION.cff minimal (title, authors depuis `git log`, version depuis dernier tag)
+- Si FAIL : créer un CITATION.cff minimal — pré-remplissable depuis `git log` + README + LICENSE (voir **Remédiation contextuelle**)
 - Si WARN : compléter les champs manquants
 
 ---
@@ -168,7 +184,7 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 - **FAIL** : Aucun codemeta.json
 
 **Recommandations types** :
-- Si FAIL : créer un codemeta.json (générable depuis CITATION.cff et pyproject.toml/package.json)
+- Si FAIL : créer un codemeta.json — pré-remplissable depuis CITATION.cff + pyproject.toml/package.json + dépendances (voir **Remédiation contextuelle**)
 - Si WARN : compléter les champs manquants
 
 ---
@@ -243,7 +259,7 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 - **FAIL** : Aucun test trouvé
 
 **Recommandations types** :
-- Si FAIL : créer un dossier `tests/` avec un premier test (framework selon langage)
+- Si FAIL : créer un dossier `tests/` avec un premier test — utiliser le framework recommandé (voir **Table des outils** — ligne "Tests")
 - Si WARN : étendre la couverture de test
 
 ---
@@ -266,7 +282,7 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 
 **Recommandations types** :
 - Si FAIL/WARN : créer un dossier `docs/`, ajouter des docstrings au code public
-- Pour Python : recommander Sphinx ou MkDocs ; pour R : pkgdown ; pour JS : Docusaurus
+- Pour Python : recommander Sphinx ou MkDocs ; pour R : pkgdown ; pour JS : Docusaurus (voir **Table des outils** — ligne "Docs")
 
 ---
 
@@ -294,8 +310,8 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 - **FAIL** : Aucune configuration CI/CD
 
 **Recommandations types** :
-- Si FAIL : créer un workflow GitHub Actions basique (test selon langage détecté)
-- Si WARN : ajouter du linting, étendre la matrice de versions
+- Si FAIL : créer un workflow GitHub Actions basique (test selon langage détecté — voir **Table des outils** — ligne "CI")
+- Si WARN : ajouter du linting (voir **Table des outils** — ligne "Linting"), étendre la matrice de versions
 
 ---
 
@@ -318,8 +334,125 @@ Générer le rapport en suivant strictement la structure du **Template de rappor
 - **FAIL** : Aucune configuration de packaging
 
 **Recommandations types** :
-- Si FAIL : créer un fichier de packaging selon le langage (pyproject.toml pour Python)
+- Si FAIL : créer un fichier de packaging selon le langage (voir **Table des outils** — ligne "Packaging")
 - Si WARN : migrer vers les standards modernes (pyproject.toml pour Python)
+
+---
+
+## Table des outils RSQKit par langage
+
+Source : https://everse.software/RSQKit/all_tools_and_resources
+
+Le rapport recommande l'outil exact pour le langage détecté plutôt qu'un conseil générique.
+
+| Check / Catégorie | Python | R | JS/TS | C++ | Julia |
+|---|---|---|---|---|---|
+| **Tests** | pytest, hypothesis | testthat | jest, vitest | CTest, Google Test | Test.jl |
+| **Linting** | ruff, mypy | lintr | eslint, prettier | clang-tidy | JuliaFormatter.jl |
+| **Formatting** | ruff format, black | styler | prettier | clang-format | JuliaFormatter.jl |
+| **CI** | GitHub Actions | GitHub Actions | GitHub Actions | GitHub Actions | GitHub Actions |
+| **Packaging** | pyproject.toml, hatch, uv | devtools | npm publish | CMake, Conan | Pkg.jl |
+| **Docs** | Sphinx, MkDocs | pkgdown | JSDoc, Docusaurus | Doxygen | Documenter.jl |
+| **Coverage** | pytest-cov, coverage | covr | nyc, c8 | gcov, lcov | Coverage.jl |
+| **Security** | pip-audit, safety | oysteR | npm audit | trivy | Pkg.jl audit |
+| **Repro envs** | uv.lock, poetry.lock, pip-tools | renv | package-lock.json | conan.lock | Manifest.toml |
+
+---
+
+## Détection du tier (three-tier model)
+
+Source : https://everse.software/RSQKit/three_tier_view
+
+Le RSQKit définit un modèle à trois tiers. Un script d'analyse jetable et un framework HPC publié n'ont pas besoin des mêmes pratiques. Détecter le tier via les heuristiques ci-dessous et **adapter les checks pertinents**.
+
+### Heuristiques de détection
+
+Pour détecter le tier, rassembler les signaux suivants (via Glob, Bash) :
+
+- **Nombre de fichiers sources** (via Glob : `**/*.py`, `**/*.js`, etc., en excluant `.venv`, `node_modules`, `.git`, `__pycache__`, `dist`, `build`)
+- **Présence de packaging** (via Glob : `pyproject.toml`, `package.json`, `Cargo.toml`, `DESCRIPTION`, `Project.toml`, `CMakeLists.txt`)
+- **Nombre d'auteurs git** (via Bash : `git log --format='%aN' | sort -u | wc -l`)
+- **Présence de tests** (via Glob : `tests/`, `test/`, `test_*.py`, etc.)
+- **Présence de releases/tags** (via Bash : `git tag`)
+- **Présence de CI** (via Glob : `.github/workflows/`, `.gitlab-ci.yml`, etc.)
+- **Présence de Dockerfile** (via Glob : `Dockerfile`)
+- **Présence de docs étendues** (via Glob : `docs/` avec plusieurs fichiers)
+
+### Classification
+
+| Tier | Heuristiques | Checks pertinents | Checks supprimés/atténués |
+|---|---|---|---|
+| **Script** (tier 1) | < 10 fichiers sources, pas de packaging, pas de tests, 1 auteur git, pas de releases | Version control, LICENSE, README, .gitignore | codemeta.json, CI testing matrices, containers, packaging |
+| **Outil/Bibliothèque** (tier 2) | Packaging présent (pyproject.toml, package.json, etc.), > 1 auteur, tests présents ou recommandés, README structuré | Tous les 10 checks + recommandation citation, metadata, releasing | Infrastructure-level only |
+| **Infrastructure** (tier 3) | Multi-package, CI complexe, Docker, docs étendues, nombreux contributeurs, releases taguées | Tous les 10 checks + recommandation security, reproducible envs, performance, future-proofing | Aucun — évaluation complète |
+
+### Affichage dans le rapport
+
+Le rapport affiche le tier détecté et justifie les checks ignorés :
+
+> "Ce repo est détecté comme **script (tier 1)**. Les checks CI testing matrices, codemeta.json et containers ne sont pas pertinents à ce niveau. Voir le [modèle three-tier RSQKit](https://everse.software/RSQKit/three_tier_view)."
+
+Pour un repo détecté comme tier 1 (script) :
+- Les checks codemeta.json, CI/CD matrices, packaging et containers sont marqués **N/A** au lieu de FAIL
+- Une note explique pourquoi ils ne sont pas pertinents
+- Les recommandations se concentrent sur : LICENSE, README, .gitignore, version control
+
+Pour un repo détecté comme tier 2 (outil/bibliothèque) :
+- Tous les 10 checks sont évalués
+- Recommandations supplémentaires : citation (CITATION.cff), metadata (codemeta.json), releasing (tags)
+
+Pour un repo détecté comme tier 3 (infrastructure) :
+- Tous les 10 checks sont évalués
+- Recommandations supplémentaires : security, reproducible envs, performance, future-proofing (liens RSQKit vers ces tâches non couvertes)
+
+---
+
+## Détection du lifecycle
+
+Source : https://everse.software/RSQKit/life_cycle
+
+Détecter le stage du repo pour adapter les recommandations prioritaires.
+
+### Heuristiques de détection
+
+- **Commits** : `git rev-list --count HEAD` (nombre total)
+- **Dernière activité** : `git log -1 --format=%cd --date=short` (date du dernier commit)
+- **Releases/tags** : `git tag` (présence et nombre)
+- **DOI** : présence de `.zenodo.json`, ou badge DOI dans README (via Grep)
+- **Fréquence des commits récents** : `git log --since='3 months ago' --oneline | wc -l`
+
+### Classification
+
+| Stage | Heuristiques | Recommandations priorisées |
+|---|---|---|
+| **Early** | < 10 commits, pas de tags, 1 auteur | Structure, LICENSE, .gitignore, README |
+| **Active dev** | Commits réguliers ( > 5 dans les 3 derniers mois), pas de CI ou CI minimale | Tests, CI, documentation |
+| **Maintenance** | Releases/tags présents, peu de commits récents (< 5 dans les 3 derniers mois) | Future-proofing, dependency updates, archiving |
+| **Published** | DOI présent, activité minimale | Vérifier citation à jour, metadata complète (codemeta.json) |
+
+### Affichage dans le rapport
+
+Le rapport affiche le stage détecté et l'utilise pour prioriser les recommandations du plan d'action :
+
+> "Stage de lifecycle détecté : **Active dev**. Recommandations priorisées : tests, CI, documentation."
+
+---
+
+## Dimensions de qualité
+
+Source : https://everse.software/RSQKit/all_indicators
+
+Le rapport inclut un scorecard par dimension de qualité. Chaque dimension est évaluée en croisant les résultats des checks pertinents.
+
+| Dimension | Checks impliqués | Évaluation |
+|---|---|---|
+| **Reproductibilité** | Packaging, Tests, CI/CD | ✅ si Packaging + CI/CD PASS ; ⚠️ si partiel ; ❌ si Packaging ou CI/CD FAIL |
+| **Maintenabilité** | Structure, Documentation | ✅ si Structure + Documentation PASS ; ⚠️ si partiel ; ❌ si FAIL |
+| **Findability** | CITATION.cff, codemeta.json | ✅ si CITATION.cff + codemeta.json PASS ; ⚠️ si partiel ; ❌ si FAIL |
+| **Trustworthiness** | Tests, CI/CD, Version control | ✅ si Tests + CI/CD PASS ; ⚠️ si partiel ; ❌ si FAIL |
+| **Réutilisabilité** | LICENSE, README, Documentation | ✅ si LICENSE + README PASS ; ⚠️ si partiel ; ❌ si LICENSE FAIL |
+
+Le scorecard est affiché dans le rapport sous forme de tableau avec une note globale par dimension (✅/⚠️/❌).
 
 ---
 
@@ -356,8 +489,8 @@ Le RSQKit définit un [spectrum d'intensité d'usage AI](https://everse.software
 | 0 | No Gen-AI | Aucun indicateur AI trouvé |
 | 1-3 | Conversational | Mentions de ChatGPT/Claude/Copilot dans README, docs, ou commits. Notes sur l'usage de prompts. Pas de config AI dans le repo. |
 | 4-6 | IDE/Repo-aware | Présence de `.cursorrules`, `.github/copilot-instructions.md`, `AGENTS.md`, `.opencode/` directory, `CLAUDE.md`, `.aider*` configs |
-| 7-9 | Agents | CI avec agents AI (GitHub Actions utilisant AI), `.github/workflows/*ai*` ou `*agent*`, bots de PR automatisés, config d'agents (ex: `.github/dependabot.yml` ne compte pas, mais des workflows utilisant des API AI oui) |
-| 10 | Autonomous | Configuration complète d'agents autonomes, agents en production modifiant le code sans intervention humaine directe, mentions d'agents autonomes dans la doc |
+| 7-9 | Agents | CI avec agents AI (GitHub Actions utilisant AI), `.github/workflows/*ai*` ou `*agent*`, bots de PR automatisés, config d'agents |
+| 10 | Autonomous | Configuration complète d'agents autonomes, agents en production modifiant le code sans intervention humaine directe |
 
 ### Détection via Glob/Grep
 
@@ -371,11 +504,99 @@ Le RSQKit définit un [spectrum d'intensité d'usage AI](https://everse.software
 - `.github/workflows/` contenant des références à des API AI (OpenAI, Anthropic) → niveau 7-9
 - Config d'agents autonomes → niveau 10
 
+### Guidance par niveau (à inclure dans le rapport)
+
+Le numéro (0-10) n'est qu'un point d'entrée. La **vraie valeur** est le contenu de guidance RSQKit associé à chaque niveau. Le rapport **doit** inclure la guidance correspondant au niveau détecté.
+
+**Cross-cutting practices** (appliquables à tous les niveaux, toujours afficher) :
+- Toujours relire le code généré par AI avant commit
+- Garder le code AI dans des commits séparés pour l'auditabilité
+- Documenter quels outils AI sont utilisés et comment
+- Maintenir la capacité de rollback (version control + tests)
+- Source : https://everse.software/RSQKit/cross_cutting_practices
+
+| Niveau détecté | Guidance à afficher dans le rapport |
+|---|---|
+| **0** (No Gen-AI) | "Aucun usage d'AI détecté. C'est parfaitement valide. Si vous envisagez l'AI, commencez par le niveau 1 (conversationnel) pour des tâches ponctuelles. Voir [Conversational Interaction](https://everse.software/RSQKit/conversational_interaction)." |
+| **1-3** (Conversational) | "Usage conversationnel détecté. Bon point de départ. **Risques** : pas de traçabilité du code généré, pas de contexte repo. **Qualité** : documentez vos prompts, committez séparément. Voir [Cross Cutting Practices](https://everse.software/RSQKit/cross_cutting_practices)." |
+| **4-6** (IDE/Repo-aware) | "Assistant IDE/repo détecté (`.cursorrules`, `AGENTS.md`, `.opencode/`). **Risques** : confiance excessive dans le contexte repo, hallucinations sur API. **Qualité** : ajoutez des garde-fous dans les règles (ex: ne pas modifier les fichiers de config sans accord), maintenez des tests comme filet. Voir [Repository-aware assistance](https://everse.software/RSQKit/repository_aware_assistance)." |
+| **7-9** (Agents) | "Agents CI/PR détectés. **Risques** : blast radius élevé, modifications automatisées sans revue. **Qualité** : exigez une revue humaine obligatoire sur tout PR généré par agent, limitez les permissions du bot, ajoutez des tests de non-régression. Voir [CI/PR/repository agents](https://everse.software/RSQKit/ci_pr_repository_agents)." |
+| **10** (Autonomous) | "Agents autonomes détectés. **Risque maximal** : conséquences difficiles à prévoir, volume de modifications élevé. **Qualité** : garde-fous stricts obligatoires — tests exhaustifs, rollback automatique, monitoring, limites de scope. Voir [Open-ended autonomous agents](https://everse.software/RSQKit/open_ended_autonomous_agents)." |
+
+### AI intensity considerations
+
+Le rapport doit aussi indiquer *pourquoi* on pourrait vouloir monter ou descendre, pas juste le niveau actuel :
+- **Monter** : tâches répétitives, documentation, tests → gain de temps
+- **Descendre** : code critique pour résultats de recherche, sécurité, dépendances → risque trop élevé
+- Source : https://everse.software/RSQKit/ai_intensity_considerations
+
 ### Ce que le rapport doit afficher
 
 - Position actuelle estimée (niveau X / 10)
 - Les indicateurs trouvés qui justifient cette estimation
-- Lien vers https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
+- La guidance RSQKit associée au niveau (voir tableau ci-dessus)
+- Les cross-cutting practices (toujours)
+- Recommandations pour monter/descendre selon le contexte du projet
+- Liens vers les pages RSQKit AI correspondantes
+
+---
+
+## Remédiation contextuelle (pré-fill)
+
+La remédiation ne génère **pas des templates vierges**. Chaque fichier généré est **pré-rempli depuis le contenu réel du repo**.
+
+### Sources de données pour pré-fill
+
+| Fichier à générer | Source de données pour pré-fill | Commandes/outils |
+|---|---|---|
+| `CITATION.cff` | Auteurs via `git log --format='%aN <%aE>'`, titre depuis README H1, licence depuis LICENSE → SPDX, URL repo depuis `git remote -v`, version depuis dernier tag | Bash (git log, git remote, git tag) + Read (README) + Read (LICENSE) |
+| `codemeta.json` | Idem CITATION.cff + dépendances depuis pyproject.toml/package.json, langage depuis détecteur, keywords depuis README | Bash (git) + Read (pyproject.toml/package.json) + Read (README) |
+| `README.md` | Nom projet depuis repo dir, description depuis README existant (si partiel), section installation depuis deps détectés, section licence depuis LICENSE | Read (README existant) + Read (LICENSE) + Glob (deps) |
+| `.github/workflows/test.yml` | Runner selon langage (pytest pour Python, `npm test` pour JS, CTest pour C++), version Python depuis `.python-version` ou `pyproject.toml` | Read (pyproject.toml) + Glob (.python-version) |
+| `.gitignore` | Template selon langage détecté (Python → `__pycache__/`, `.venv/`, `*.pyc`, etc.) | Glob (langage détecté) |
+
+### Flux de génération (trust + transparence)
+
+1. **Prévisualiser** le contenu qui sera généré (avant d'écrire) — afficher le contenu à l'utilisateur
+2. Demander **confirmation explicite** de l'utilisateur
+3. **Écrire** le fichier
+4. **Afficher** ce qui a été créé/modifié
+5. Proposer le **prochain step** de la chaîne de remédiation (voir ci-dessous)
+
+---
+
+## Chaînes de remédiation
+
+La génération d'un fichier n'est souvent que la première étape. Proposer des **chaînes** qui enchaînent les actions de remédiation de façon logique.
+
+### Chaîne citation
+
+```
+1. Générer CITATION.cff (pré-rempli depuis git + README + LICENSE)
+   → 2. Connecter le repo à Zenodo (GitHub integration)
+   → 3. Créer une release (tag) pour déclencher le DOI Zenodo
+   → 4. Ajouter le badge DOI dans le README
+   → 5. Ajouter le DOI dans codemeta.json "identifier"
+```
+
+### Chaîne CI
+
+```
+1. Générer .github/workflows/test.yml (adapté au langage détecté)
+   → 2. Ajouter un job de linting (ruff pour Python, eslint pour JS)
+   → 3. Ajouter Dependabot (.github/dependabot.yml)
+   → 4. Ajouter un PR template (.github/pull_request_template.md)
+   → 5. Activer branch protection (instructions, pas automatisé)
+```
+
+### Chaîne metadata
+
+```
+1. Générer codemeta.json (pré-rempli depuis deps + langage + auteurs)
+   → 2. Valider avec le validateur codemeta (lien: https://codemeta.github.io/codemetar/)
+   → 3. Ajouter .zenodo.json pour contrôler le dépôt Zenodo
+   → 4. Vérifier la cohérence CITATION.cff ↔ codemeta.json
+```
 
 ---
 
@@ -389,6 +610,8 @@ Générer le rapport en suivant **strictement** cette structure. Le rapport est 
 **Repository**: [nom du repo]
 **Date**: [date du scan]
 **Language(s) detected**: [langages détectés, langage principal en premier]
+**Software tier**: [Script / Outil-Bibliothèque / Infrastructure]
+**Lifecycle stage**: [Early / Active dev / Maintenance / Published]
 **AI Intensity**: [niveau estimé] / 10 — [description courte]
 
 ---
@@ -418,6 +641,26 @@ Générer le rapport en suivant **strictement** cette structure. Le rapport est 
 | CI/CD | ... |
 | Packaging | ... |
 
+### Dimensions de qualité (mapping RSQKit)
+> Source : https://everse.software/RSQKit/all_indicators
+
+| Dimension | Score | Checks impliqués |
+|---|---|---|
+| Reproductibilité | ✅ / ⚠️ / ❌ | Packaging, Tests, CI/CD |
+| Maintenabilité | ✅ / ⚠️ / ❌ | Structure, Documentation |
+| Findability | ✅ / ⚠️ / ❌ | CITATION.cff, codemeta.json |
+| Trustworthiness | ✅ / ⚠️ / ❌ | Tests, CI/CD, Version control |
+| Réutilisabilité | ✅ / ⚠️ / ❌ | LICENSE, README, Documentation |
+
+### Tier de logiciel détecté
+**Tier**: [Script / Outil-Bibliothèque / Infrastructure]
+**Justification**: [heuristiques qui ont mené à cette classification]
+**Checks ajustés**: [liste des checks marqués N/A et pourquoi]
+
+### Stage de lifecycle détecté
+**Stage**: [Early / Active dev / Maintenance / Published]
+**Justification**: [heuristiques qui ont mené à cette classification]
+
 ### Tâches non évaluées
 
 > ⚠️ Ce scan évalue 10 des 35+ tâches RSQKit. Les tâches suivantes ne sont **pas** évaluées :
@@ -432,7 +675,7 @@ Générer le rapport en suivant **strictement** cette structure. Le rapport est 
 
 ## 2. Plan d'action priorisé
 
-> Priorisation par effort × impact. L'impact facture le risque et le rôle cible.
+> Priorisation par effort × impact. L'impact facture le risque, le tier, le lifecycle et le rôle cible.
 
 ### Risques critiques (à traiter en priorité si détectés)
 1. 🔴 [problème critique, ex: pas de LICENSE] — **impact: critique** ([raison])
@@ -464,6 +707,12 @@ Générer le rapport en suivant **strictement** cette structure. Le rapport est 
 **Recommandations**:
 - [action concrète recommandée]
 
+**Outils RSQKit recommandés** (pour [langage détecté]):
+- [outil 1] — [pourquoi]
+- Voir : https://everse.software/RSQKit/[page]#tools
+
+> 💡 Je peux générer un template de README amélioré si tu le souhaites.
+
 ---
 
 ### 3.2 LICENSE
@@ -489,40 +738,59 @@ Générer le rapport en suivant **strictement** cette structure. Le rapport est 
 **Analyse**:
 - [indicateurs trouvés dans le repo justifiant le niveau]
 
+**Guidance**:
+[Insérer la guidance correspondant au niveau détecté depuis le tableau de la section AI Spectrum Assessment du SKILL.md]
+
+**Cross-cutting practices** (applicables à tous les niveaux):
+- Toujours relire le code généré par AI avant commit
+- Garder le code AI dans des commits séparés pour l'auditabilité
+- Documenter quels outils AI sont utilisés et comment
+- Maintenir la capacité de rollback (version control + tests)
+
+**Recommandations**:
+- [suggestions pour ajuster l'intensité AI selon le contexte du projet]
+
 **Références RSQKit**:
 - https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
 - https://everse.software/RSQKit/cross_cutting_practices
-```
+- https://everse.software/RSQKit/ai_intensity_considerations
 
----
-
-## Menu de remédiation
-
-À la fin du rapport (après la section 4), afficher le menu interactif suivant, adapté aux problèmes trouvés :
-
-```
 ---
 
 ## 5. Remédiation
 
-Je peux t'aider à corriger les problèmes identifiés. Voici les fichiers que je peux générer :
+Je peux t'aider à corriger les problèmes identifiés. Voici ce que je peux faire :
 
-📋 Fichiers à générer :
+📋 Fichiers à générer (pré-remplis depuis ton repo) :
   1. LICENSE ([type de licence suggéré])
-  2. CITATION.cff ([nombre d'auteurs trouvés via git log])
-  3. codemeta.json ([langage détecté])
-  4. .github/workflows/test.yml ([framework de test pour le langage détecté])
-  5. .gitignore ([template pour le langage détecté])
+  2. CITATION.cff (auteurs: [N] trouvés via git log)
+  3. codemeta.json (deps: [N] depuis [fichier packaging], langage: [langage])
+  4. .github/workflows/test.yml ([framework de test] pour [langage détecté])
+  5. .gitignore (template [langage détecté])
   6. README.md ([si manquant ou incomplet])
 
-Dis-moi ce que tu veux faire (numéro du fichier, ou "tout").
+🔗 Chaînes de remédiation disponibles :
+  A. Chaîne citation → CITATION.cff → Zenodo → DOI → README badge
+  B. Chaîne CI → workflow → linting → dependabot → PR template
+  C. Chaîne metadata → codemeta.json → .zenodo.json → validation
+
+Dis-moi ce que tu veux faire (numéro, lettre, ou "tout").
 ```
 
-**Règles de remédiation** :
+---
+
+## Règles de remédiation
+
 - Seulement proposer les fichiers pertinents aux checks qui ont FAIL ou WARN
+- Seulement proposer les chaînes pertinentes au tier et lifecycle détectés
+  - Tier 1 (script) : pas de chaîne metadata, pas de chaîne CI (pas pertinent)
+  - Tier 2 (outil) : toutes les chaînes pertinentes
+  - Tier 3 (infrastructure) : toutes les chaînes + recommandations security/reproducible envs
 - Ne pas générer sans confirmation explicite de l'utilisateur
-- Après génération d'un fichier, proposer le prochain step logique
-- Pré-remplir avec les données du repo quand possible (auteurs git, nom du projet, langage détecté)
+- Toujours prévisualiser le contenu avant d'écrire (afficher le fichier qui sera créé)
+- Après génération d'un fichier, proposer le prochain step de la chaîne
+- Pré-remplir avec les données du repo (auteurs git, nom du projet, langage détecté, dépendances, licence)
+- Si l'utilisateur demande "tout", générer les fichiers un par un avec prévisualisation + confirmation pour chacun
 
 ---
 
@@ -533,6 +801,14 @@ Dis-moi ce que tu veux faire (numéro du fichier, ou "tout").
 - **AI Guidance** : https://everse.software/RSQKit/ai
 - **Spectrum of AI Intensity** : https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
 - **Cross Cutting Practices** : https://everse.software/RSQKit/cross_cutting_practices
+- **AI Intensity Considerations** : https://everse.software/RSQKit/ai_intensity_considerations
+- **Three-tier model** : https://everse.software/RSQKit/three_tier_view
+- **Lifecycle** : https://everse.software/RSQKit/life_cycle
+- **Quality dimensions** : https://everse.software/RSQKit/quality_dimensions
 - **All indicators** : https://everse.software/RSQKit/all_indicators
 - **All tools and resources** : https://everse.software/RSQKit/all_tools_and_resources
+- **Conversational Interaction** : https://everse.software/RSQKit/conversational_interaction
+- **Repository-aware assistance** : https://everse.software/RSQKit/repository_aware_assistance
+- **CI/PR/repository agents** : https://everse.software/RSQKit/ci_pr_repository_agents
+- **Open-ended autonomous agents** : https://everse.software/RSQKit/open_ended_autonomous_agents
 - **Source GitHub** : https://github.com/EVERSE-ResearchSoftware/RSQKit
