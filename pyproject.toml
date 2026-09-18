@@ -1,6 +1,6 @@
 [project]
 name = "everse-scan"
-version = "0.1.0"
+version = "0.2.0"
 description = "Outil d'analyse de repositories de recherche : génère un rapport structuré sur la qualité et la conformité du logiciel aux pratiques EVERSE/RSQKit"
 authors = [
     {name = "Hugo",email = "hugo.bacard@ijclab.in2p3.fr"},
@@ -18,6 +18,31 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
 ]
 
+[project.scripts]
+everse-scan = "everse_scan.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/everse_scan"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 120
 
 [tool.pdm]
-distribution = false
+distribution = true
+
+[tool.pdm.build]
+includes = ["src/everse_scan"]
