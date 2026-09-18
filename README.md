@@ -6,7 +6,7 @@ Outil d'analyse de repositories de recherche qui génère un rapport structuré 
 
 ## Statut
 
-**V2 (M6)** — CLI Python complet avec 36 checks déterministes (35+ tâches RSQKit), intégrations FAIR optionnelles (+7 checks), détection de funder avec conformité, rapport adaptatif par rôle, re-scan avec diff, priorisation 2D, tier et lifecycle detection, sortie JSON + Markdown.
+**v0.5.0** — CLI Python complet avec 36 checks déterministes (35+ tâches RSQKit), intégrations FAIR optionnelles (+7 checks), détection de funder avec conformité, rapport adaptatif par rôle, re-scan avec diff, priorisation 2D, tier et lifecycle detection, sortie JSON + Markdown. 99 tests.
 
 ## Installation
 
@@ -55,6 +55,17 @@ everse-scan ./repo --save baseline.json --format json
 everse-scan ./repo --diff baseline.json
 ```
 
+Exemple de sortie de diff :
+
+```
+Progress: 7/36 (was 4/36), delta +3
+
+## Improvements
+- LICENSE: WARN -> PASS
+- CITATION.cff: FAIL -> PASS
+- CI/CD: FAIL -> PASS
+```
+
 ### Intégrations FAIR
 
 ```bash
@@ -63,6 +74,12 @@ everse-scan ./repo --use
 
 # Ou spécifier une intégration particulière
 everse-scan ./repo --use howfairis
+```
+
+### Scan d'un repo GitHub
+
+```bash
+everse-scan https://github.com/org/repo --format markdown
 ```
 
 ### Options
@@ -84,6 +101,7 @@ everse-scan est aussi disponible comme skill opencode. Il se déclenche naturell
 - "Scanne mon repo"
 - "Analyse la qualité de mon code"
 - "Vérifie si mon projet respecte les pratiques FAIR"
+- "Fais un audit EVERSE de mon repo"
 
 ## Ce que fait everse-scan
 
@@ -92,7 +110,7 @@ everse-scan est aussi disponible comme skill opencode. Il se déclenche naturell
 - Évalue 36 checks déterministes couvrant 35+ tâches RSQKit
 - Détecte le tier (script / outil-bibliothèque / infrastructure)
 - Détecte le lifecycle (early / active dev / maintenance / published)
-- Détecte le funder (Horizon Europe, NSF, Wellcome, DFG, ANR, UKRI, Helholtz)
+- Détecte le funder (Horizon Europe, NSF, Wellcome, DFG, ANR, UKRI, Helmholtz)
 - Vérifie la conformité aux exigences du funder détecté
 - Évalue la position sur le spectrum AI (0-10)
 - Génère un rapport structuré avec résumé exécutif, dimensions de qualité, plan d'action priorisé (effort x impact), détails techniques, guidance AI, conformité funder
@@ -168,11 +186,36 @@ src/everse_scan/
 ├── models.py           # CheckResult, ScanResult, CheckStatus
 ├── priorities.py        # Priorisation 2D (effort x impact)
 ├── checks/             # 17 core checks + 19 extended checks
+│   ├── readme.py
+│   ├── license.py
+│   ├── ...
+│   └── extended.py      # 19 checks étendus (M5)
 ├── reporters/          # JSON, Markdown, Adaptive, Diff, Funder
+│   ├── json.py
+│   ├── markdown.py
+│   ├── adaptive.py      # Rapport par rôle (--role)
+│   ├── diff.py          # Re-scan avec diff (--save/--diff)
+│   └── funder.py        # Conformité funder
 ├── integrations/       # howfairis, cffconvert, codemeta
 ├── knowledge/          # rsqkit.py (35+ tasks), funders.py (funder profiles)
 ├── languages/          # Détection multi-langage
 └── context/            # Tier, Lifecycle, Funder detection
+    ├── tier.py
+    ├── lifecycle.py
+    └── funder.py
+```
+
+## Développement
+
+```bash
+# Installer en mode dev
+uv pip install -e ".[dev]"
+
+# Lancer les tests
+python3 -m pytest tests/ -v
+
+# Lancer un scan sur le repo lui-même
+everse-scan . --format both -o report
 ```
 
 ## Roadmap
