@@ -50,6 +50,10 @@ class ScanResult:
     lifecycle_justification: str = ""
     ai_intensity: int = 0
     ai_indicators: list[str] = field(default_factory=list)
+    funder: str = ""
+    funder_label: str = ""
+    funder_grant_ids: list[str] = field(default_factory=list)
+    funder_confidence: str = "low"
     checks: list[CheckResult] = field(default_factory=list)
 
     @property
@@ -82,6 +86,10 @@ class ScanResult:
             "lifecycle_justification": self.lifecycle_justification,
             "ai_intensity": self.ai_intensity,
             "ai_indicators": self.ai_indicators,
+            "funder": self.funder,
+            "funder_label": self.funder_label,
+            "funder_grant_ids": self.funder_grant_ids,
+            "funder_confidence": self.funder_confidence,
             "summary": {
                 "total": self.total,
                 "passed": self.passed,

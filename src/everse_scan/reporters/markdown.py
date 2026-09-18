@@ -114,6 +114,8 @@ def generate_markdown(result: ScanResult) -> str:
     lines.append(f"**Software tier**: {_tier_label(result.tier)}")
     lines.append(f"**Lifecycle stage**: {_lifecycle_label(result.lifecycle)}")
     lines.append(f"**AI Intensity**: {result.ai_intensity} / 10")
+    if result.funder:
+        lines.append(f"**Funder**: {result.funder_label} (confidence: {result.funder_confidence})")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -241,6 +243,21 @@ def generate_markdown(result: ScanResult) -> str:
     lines.append("")
     lines.append("---")
     lines.append("")
+
+    # Funder compliance section (if funder detected)
+    if result.funder:
+        from everse_scan.reporters.funder import generate_funder_section
+        from everse_scan.context.funder import FunderResult
+        funder_result = FunderResult(
+            funder=result.funder,
+            funder_label=result.funder_label,
+            grant_ids=result.funder_grant_ids,
+            detection_sources=[],
+            confidence=result.funder_confidence,
+        )
+        lines.append(generate_funder_section(result, funder_result))
+        lines.append("---")
+        lines.append("")
 
     # 3. Technical details
     lines.append("## 3. Détails techniques par tâche")

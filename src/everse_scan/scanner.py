@@ -11,6 +11,7 @@ from everse_scan.models import CheckResult, CheckStatus, ScanResult
 from everse_scan.languages.detector import detect_languages, LanguageInfo
 from everse_scan.context.tier import detect_tier, TierResult, TIER_SCRIPT
 from everse_scan.context.lifecycle import detect_lifecycle, LifecycleResult
+from everse_scan.context.funder import detect_funder, FunderResult
 from everse_scan.checks.readme import check_readme
 from everse_scan.checks.license import check_license
 from everse_scan.checks.citation import check_citation
@@ -115,6 +116,9 @@ def scan_repo(
     # AI intensity
     ai_level, ai_indicators = _detect_ai_intensity(str(path))
 
+    # Funder detection
+    funder_result = detect_funder(str(path))
+
     # Run all 17 core checks + 18 extended checks = 35 total
     checks: list[CheckResult] = []
     lang = lang_info.primary
@@ -193,5 +197,9 @@ def scan_repo(
         lifecycle_justification=lifecycle_result.justification,
         ai_intensity=ai_level,
         ai_indicators=ai_indicators,
+        funder=funder_result.funder,
+        funder_label=funder_result.funder_label,
+        funder_grant_ids=funder_result.grant_ids,
+        funder_confidence=funder_result.confidence,
         checks=checks,
     )
