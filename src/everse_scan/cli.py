@@ -10,6 +10,12 @@ from everse_scan import __version__
 from everse_scan.scanner import scan_repo
 from everse_scan.reporters.json import generate_json
 from everse_scan.reporters.markdown import generate_markdown
+from everse_scan.reporters.adaptive import generate_adaptive_markdown, ROLES
+from everse_scan.reporters.diff import (
+    load_baseline,
+    generate_diff_markdown,
+    save_baseline,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -30,6 +36,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output", "-o",
         help="Output file path (default: stdout for json, everse-scan-report.md for markdown)",
+    )
+    parser.add_argument(
+        "--role",
+        choices=ROLES,
+        default="default",
+        help="Adapt report tone and priorities to a role (default: balanced)",
+    )
+    parser.add_argument(
+        "--save",
+        metavar="BASELINE_FILE",
+        help="Save the scan result as a baseline JSON file for later comparison",
+    )
+    parser.add_argument(
+        "--diff",
+        metavar="BASELINE_FILE",
+        help="Compare current scan with a previously saved baseline and show progress",
     )
     parser.add_argument(
         "--version",
@@ -65,6 +87,36 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         result = scan_repo(repo_path)
 
+    # Save baseline if requested
+    if args.save:
+        save_baseline(result, args.save)
+        print(f"Baseline saved to {args.save}", file=sys.stderr)
+
+    # Diff mode: compare with baseline and show progress report
+    if args.diff:
+        if not Path(args.diff).exists():
+            print(f"Error: baseline file '{args.diff}' not found", file=sys.stderr)
+            return 1
+        baseline = load_baseline(args.diff)
+        diff_output = generate_diff_markdown(baseline, result)
+
+        # In diff mode, also save the current scan as new baseline if --save is also given
+        # Otherwise just output the diff
+        if args.output:
+            Path(args.output).write_text(diff_output)
+            print(f"Diff report saved to {args.output}", file=sys.stderr)
+        else:
+            print(diff_output)
+
+        delta = result.passed - baseline.get("summary", {}).get("passed", 0)
+        print(
+            f"\nProgress: {result.passed}/{result.total} "
+            f"(was {baseline.get('summary', {}).get('passed', 0)}/{baseline.get('summary', {}).get('total', 0)}), "
+            f"delta {delta:+d}",
+            file=sys.stderr,
+        )
+        return 0
+
     # Generate output
     if args.format == "json":
         output = generate_json(result)
@@ -74,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(output)
     elif args.format == "markdown":
-        output = generate_markdown(result)
+        output = generate_adaptive_markdown(result, args.role)
         output_path = args.output or "everse-scan-report.md"
         Path(output_path).write_text(output)
         print(f"Report saved to {output_path}", file=sys.stderr)
@@ -82,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
               f"{result.warned} warned, {result.failed} failed", file=sys.stderr)
     elif args.format == "both":
         json_output = generate_json(result)
-        md_output = generate_markdown(result)
+        md_output = generate_adaptive_markdown(result, args.role)
         json_path = args.output or "everse-scan-report.json"
         md_path = str(Path(json_path).with_suffix(".md"))
         Path(json_path).write_text(json_output)
