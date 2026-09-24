@@ -75,29 +75,63 @@ def _lifecycle_label(stage: str) -> str:
     return labels.get(stage, stage)
 
 
-def _ai_guidance(level: int) -> str:
-    if level == 0:
-        return ("No AI usage detected. This is perfectly valid. If you are considering AI, "
-                "start with level 1 (conversational) for occasional tasks. "
-                "See [Conversational Interaction](https://everse.software/RSQKit/conversational_interaction).")
-    if level <= 3:
-        return ("Conversational AI usage detected. Good starting point. **Risks**: no traceability of generated code, "
-                "no repository context. **Quality**: document your prompts, commit separately. "
-                "See [Cross Cutting Practices](https://everse.software/RSQKit/cross_cutting_practices).")
-    if level <= 6:
-        return ("IDE/repo-aware assistant detected. **Risks**: over-reliance on repository context, "
-                "API hallucinations. **Quality**: add guardrails to rules, "
-                "maintain tests as a safety net. "
-                "See [Repository-aware assistance](https://everse.software/RSQKit/repository_aware_assistance).")
-    if level <= 9:
-        return ("CI/PR agents detected. **Risks**: high blast radius, automated changes without review. "
-                "**Quality**: require mandatory human review, limit bot permissions, "
-                "add non-regression tests. "
-                "See [CI/PR/repository agents](https://everse.software/RSQKit/ci_pr_repository_agents).")
-    return ("Autonomous agents detected. **Maximum risk**: consequences hard to predict, "
-            "high volume of changes. **Quality**: strict guardrails required — "
-            "exhaustive tests, automatic rollback, monitoring. "
-            "See [Open-ended autonomous agents](https://everse.software/RSQKit/open_ended_autonomous_agents).")
+def _ai_profile_section(profile) -> list[str]:
+    """Generate the AI Usage Determination section.
+
+    This is NOT an evaluation. It reads a self-determined profile
+    (from ai-intensity.yaml) and presents it neutrally.
+    """
+    lines: list[str] = []
+
+    if not profile.found:
+        lines.append("## 4. AI Usage Determination")
+        lines.append("")
+        lines.append("**Profile**: Not found")
+        lines.append("")
+        lines.append("> No AI intensity profile (`ai-intensity.yaml`) found in this repository.")
+        lines.append(">")
+        lines.append("> The RSQKit AI spectrum is a **self-assessment framework** — it cannot be")
+        lines.append("> determined by scanning repository files. To determine your AI intensity,")
+        lines.append("> run the **AI Intensity Q&A skill**.")
+        lines.append(">")
+        lines.append("> See: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage")
+        lines.append("")
+        return lines
+
+    lines.append("## 4. AI Usage Determination")
+    lines.append("")
+    lines.append("**Profile**: Found — `ai-intensity.yaml` present")
+    lines.append("")
+
+    if profile.current is not None or profile.desired is not None or profile.authorized is not None or profile.sustainable is not None:
+        lines.append("**Self-determined intensity levels** (RSQKit spectrum 0-10):")
+        lines.append("")
+        lines.append("| Dimension | Level | User's notes |")
+        lines.append("|---|---|---|")
+        lines.append(f"| Current usage | {profile.current if profile.current is not None else '—'} / 10 | {profile.current_usage or '—'} |")
+        lines.append(f"| Desired | {profile.desired if profile.desired is not None else '—'} / 10 | {profile.desired_intensity or '—'} |")
+        lines.append(f"| Authorized | {profile.authorized if profile.authorized is not None else '—'} / 10 | {profile.authorized_intensity or '—'} |")
+        lines.append(f"| Sustainable | {profile.sustainable if profile.sustainable is not None else '—'} / 10 | {profile.review_capacity or '—'} |")
+        lines.append("")
+
+    lines.append("> **RSQKit**: \"It is not a maturity scale. Higher intensity does not mean better")
+    lines.append("> practice. It does not mean higher skill. It does not mean better quality.\"")
+    lines.append("> — [Spectrum of Intensity of AI Usage](https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage)")
+    lines.append("")
+
+    if profile.determined_by:
+        lines.append(f"*Determined by*: {profile.determined_by}" + (f" on {profile.date}" if profile.date else ""))
+        lines.append("")
+
+    lines.append("**RSQKit considerations** (questions for the user, not tool recommendations):")
+    lines.append("- Where does your project sit? Where should it sit?")
+    lines.append("- Where do you sit? Where do you want to be? Where should you be?")
+    lines.append("- Move up when greater intensity solves a real problem.")
+    lines.append("- Move down when a simpler practice provides the same benefit.")
+    lines.append("- Source: https://everse.software/RSQKit/ai_intensity_considerations")
+    lines.append("")
+
+    return lines
 
 
 def generate_markdown(result: ScanResult) -> str:
@@ -113,7 +147,7 @@ def generate_markdown(result: ScanResult) -> str:
     lines.append(f"**Language(s) detected**: {langs}")
     lines.append(f"**Software tier**: {_tier_label(result.tier)}")
     lines.append(f"**Lifecycle stage**: {_lifecycle_label(result.lifecycle)}")
-    lines.append(f"**AI Intensity**: {result.ai_intensity} / 10")
+    lines.append(f"**AI Intensity Profile**: {'Found' if result.ai_intensity_profile.found else 'Not found'}")
     if result.funder:
         lines.append(f"**Funder**: {result.funder_label} (confidence: {result.funder_confidence})")
     lines.append("")
@@ -283,31 +317,7 @@ def generate_markdown(result: ScanResult) -> str:
         lines.append("---")
         lines.append("")
 
-    # 4. AI Spectrum
-    lines.append("## 4. AI Spectrum Assessment")
-    lines.append("")
-    lines.append(f"**Estimated current position**: Level {result.ai_intensity} / 10")
-    lines.append("")
-    lines.append("**Analysis**:")
-    if result.ai_indicators:
-        for ind in result.ai_indicators:
-            lines.append(f"- {ind}")
-    else:
-        lines.append("- No AI indicators found")
-    lines.append("")
-    lines.append("**Guidance**:")
-    lines.append(_ai_guidance(result.ai_intensity))
-    lines.append("")
-    lines.append("**Cross-cutting practices** (applicable to all levels):")
-    lines.append("- Always review AI-generated code before committing")
-    lines.append("- Keep AI-generated code in separate commits for auditability")
-    lines.append("- Document which AI tools are used and how")
-    lines.append("- Maintain rollback capability (version control + tests)")
-    lines.append("")
-    lines.append("**RSQKit References**:")
-    lines.append("- https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage")
-    lines.append("- https://everse.software/RSQKit/cross_cutting_practices")
-    lines.append("- https://everse.software/RSQKit/ai_intensity_considerations")
-    lines.append("")
+    # 4. AI Usage Determination
+    lines.extend(_ai_profile_section(result.ai_intensity_profile))
 
     return "\n".join(lines)

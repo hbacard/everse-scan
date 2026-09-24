@@ -25,7 +25,7 @@
 | **Remediation** | Diagnosis + interactive invitation to generation |
 | **Repositories** | Local + remote (GitHub URLs) |
 | **Languages** | Multi-language (Python, R, C++, Julia, etc.) |
-| **AI spectrum** | Assessment of the repository's position on the RSQKit 0-10 spectrum |
+| **AI intensity** | Reads `ai-intensity.yaml` profile (created by the separate AI Intensity Q&A skill). If absent, notes "No AI intensity profile found" with RSQKit link. |
 
 ### V2 — CLI + Hybrid Skill
 
@@ -142,48 +142,108 @@ The report displays the detected tier and justifies the ignored checks:
 - **Remote GitHub repository**: the skill temporarily clones the repo (via `git clone` to a temporary directory) then analyzes it as a local repository
 - **URL detection**: `https://github.com/org/repo` → clone + scan
 
-### 5. AI Spectrum Assessment (RSQKit)
+### 5. AI Usage Determination (RSQKit)
 
-The skill evaluates where the repository sits on the RSQKit AI intensity spectrum (0-10):
+> **Key principle**: The RSQKit spectrum is **not a maturity scale**. Higher intensity does not mean better practice, higher skill, or better quality. The right level depends on the task, review capacity, material sensitivity, and safe access.
+>
+> *"Use the lowest intensity you can justify."* — RSQKit
 
-| Level | Intensity | Indicators in the repository |
+#### 5.1 Design decision: determine, don't evaluate
+
+The RSQKit AI spectrum (0-10) is designed as a **self-assessment framework**. The questions it poses — *"Where do you sit? Where do you want to be? Where should you be?"* — can only be answered by the user, not by scanning repository files.
+
+**Previous approach (removed)**: Scan repo files for AI artifacts (`.cursorrules`, `AGENTS.md`, `.opencode/`, etc.) and assign an intensity level. This was:
+- **Gameable** — anyone can remove AI artifacts from their repo
+- **Unreliable** — file presence doesn't indicate actual usage intensity
+- **Prescriptive** — the tool was making value judgments ("good starting point", "risks: over-reliance", "add guardrails")
+
+**New approach**: A separate **AI Intensity Q&A skill** conducts an interactive assessment with the user. The results are stored in `ai-intensity.yaml` (following AI Declaration Format conventions). `everse-scan` reads this profile if present and includes it **neutrally** in the report. If absent, the report notes "No AI intensity profile found" with a link to the RSQKit AI pages.
+
+#### 5.2 The AI Intensity Q&A Skill (separate skill)
+
+A standalone opencode skill that triggers when the user asks to determine their AI intensity, assess their AI usage, or figure out what AI level is appropriate for their project.
+
+**Four assessment dimensions** (mapped to RSQKit questions):
+
+| Dimension | RSQKit question | What the Q&A explores |
 |---|---|---|
-| 0 | No Gen-AI | No AI usage |
-| 1-3 | Conversational | Presence of prompts, notes on ChatGPT/Claude usage |
-| 4-6 | IDE/Repo-aware | .cursorrules, copilot config, opencode config, AGENTS.md, .opencode/ |
-| 7-9 | Agents | CI with AI agents, GitHub Actions AI, agent configuration |
-| 10 | Autonomous | Autonomous agents, full open-ended agent configuration |
+| **Current usage** | "Where do you sit?" | What AI tools do you currently use? (ChatGPT, Copilot, Claude Code, Cursor, autonomous agents, etc.) → maps to spectrum level |
+| **Desired intensity** | "Where do you want to be?" | What level of AI autonomy do you want? (conversational help, IDE suggestions, repo-aware, agentic, autonomous) → desired level |
+| **Authorized intensity** | "Where should you be?" | What level of AI is allowed/authorized in your context? (project policy, institutional rules, funder requirements, data sensitivity) → authorized level |
+| **Review capacity** | (affects sustainability) | How much review capacity do you have? What are you comfortable reviewing? (affects what intensity is sustainable) |
 
-The report includes:
-- Estimated current position on the spectrum
-- Recommendations to move up/down in intensity based on the project context
-- Link to the corresponding RSQKit AI pages
+The Q&A walks the user through each dimension with concrete questions and examples from the RSQKit spectrum descriptions. It does **not** recommend a level — it helps the user **determine** their own level by presenting the RSQKit considerations neutrally.
 
-#### 5.1 AI Guidance Content (not just the number)
+#### 5.3 Profile file: `ai-intensity.yaml`
 
-The number (0-10) is only an entry point. The **real value** is the RSQKit guidance content associated with each level. The report should include:
+Stored in the repository root. Follows AI Declaration Format conventions (YAML, schema-validatable, human-edited). Separate from `aidecl.yaml` (which records provenance — what AI was used). `ai-intensity.yaml` records preferences — what AI level is desired/authorized.
 
-**Cross-cutting practices** (applicable to all levels):
-- Always review AI-generated code before committing
-- Keep AI-generated code in separate commits for auditability
-- Document which AI tools are used and how
-- Maintain rollback capability (version control + tests)
-- Source: https://everse.software/RSQKit/cross_cutting_practices
+```yaml
+# AI Intensity Profile
+# Generated by the AI Intensity Q&A skill
+# This is NOT an evaluation — it is a self-determination by the project's users.
+# See: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
 
-**Guidance by detected level** (examples):
+schema_version: "1.0.0"
 
-| Detected level | Guidance to display in the report |
-|---|---|
-| 0 (No Gen-AI) | "No AI usage detected. This is perfectly valid. If you are considering AI, start with level 1 (conversational) for occasional tasks. See [Conversational Interaction](https://everse.software/RSQKit/conversational_interaction)." |
-| 1-3 (Conversational) | "Conversational AI usage detected. Good starting point. **Risks**: no traceability of generated code, no repository context. **Quality**: document your prompts, commit separately. See [Cross Cutting Practices](https://everse.software/RSQKit/cross_cutting_practices)." |
-| 4-6 (IDE/Repo-aware) | "IDE/repo-aware assistant detected (`.cursorrules`, `AGENTS.md`, `.opencode/`). **Risks**: over-reliance on repository context, API hallucinations. **Quality**: add guardrails to rules (e.g., do not modify config files without approval), maintain tests as a safety net. See [Repository-aware assistance](https://everse.software/RSQKit/repository_aware_assistance)." |
-| 7-9 (Agents) | "CI/PR agents detected. **Risks**: high blast radius, automated changes without review. **Quality**: require mandatory human review on any agent-generated PR, limit bot permissions, add non-regression tests. See [CI/PR/repository agents](https://everse.software/RSQKit/ci_pr_repository_agents)." |
-| 10 (Autonomous) | "Autonomous agents detected. **Maximum risk**: consequences hard to predict, high volume of changes. **Quality**: strict guardrails required — exhaustive tests, automatic rollback, monitoring, scope limits. See [Open-ended autonomous agents](https://everse.software/RSQKit/open_ended_autonomous_agents)." |
+project:
+  name: my-research-project
+  repository: https://github.com/org/repo
 
-**AI intensity considerations**: the report should also indicate *why* one might want to move up or down, not just the current level:
-- Move up: repetitive tasks, documentation, tests → time savings
-- Move down: code critical for research results, security, dependencies → risk too high
-- Source: https://everse.software/RSQKit/ai_intensity_considerations
+# Self-determined intensity levels (0-10, RSQKit spectrum)
+intensity:
+  current: 4          # Where the user currently sits
+  desired: 6          # Where the user wants to be
+  authorized: 7       # What is allowed/authorized in their context
+  sustainable: 5      # What is sustainable given review capacity
+
+# The determining factors (free text, from the Q&A)
+determination:
+  current_usage: >-
+    Using Copilot for autocomplete and occasional Claude conversations for
+    debugging. No repo-aware tools yet.
+  desired_intensity: >-
+    Would like to try repository-aware assistance for refactoring and test
+    generation, but not ready for agentic workflows.
+  authorized_intensity: >-
+    No institutional restrictions. Funder (Horizon Europe) requires AI
+    usage disclosure but does not limit intensity.
+  review_capacity: >-
+    Solo developer, limited time. Can review small patches carefully but
+    cannot handle large autonomous diffs.
+
+# RSQKit spectrum reference (embedded for the scan to display)
+spectrum_reference:
+  url: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
+  considerations_url: https://everse.software/RSQKit/ai_intensity_considerations
+  note: >-
+    It is not a maturity scale. Higher intensity does not mean better practice.
+    Use the lowest intensity you can justify.
+
+declaration:
+  date: "2026-09-24"
+  determined_by: Jane Researcher
+  next_review: "2027-03-24"
+  notes: >-
+    Initial self-assessment via AI Intensity Q&A skill.
+```
+
+#### 5.4 How everse-scan uses the profile
+
+`everse-scan` does **not** conduct the Q&A. It simply reads `ai-intensity.yaml` if present:
+
+- **Profile found**: Include the self-determined levels and the RSQKit considerations **neutrally** in the report. No evaluation, no "recommendations to move up/down". Present the levels as the user's own determination.
+- **Profile absent**: Note "No AI intensity profile found" with a link to the RSQKit AI spectrum page and a suggestion to run the AI Intensity Q&A skill. Do **not** attempt to detect or infer AI usage from repo files.
+
+#### 5.5 Reporting principles (non-prescriptive)
+
+The report section for AI intensity follows these rules:
+
+1. **Describe, don't prescribe** — present what the user determined, not what the tool thinks they should do
+2. **Link, don't lecture** — point to the relevant RSQKit page for each spectrum level, let the user read the guidance themselves
+3. **Quote, don't interpret** — use RSQKit's own language ("It is not a maturity scale. Higher intensity does not mean better practice.")
+4. **Questions, not answers** — present RSQKit's own questions ("Where does your project sit? Where should it sit?") as prompts for the user, not as tool outputs
+5. **No level is better** — never imply that higher or lower intensity is preferable
 
 ### 6. Markdown Report Structure
 
@@ -193,7 +253,7 @@ The number (0-10) is only an entry point. The **real value** is the RSQKit guida
 **Repository**: [repo name]
 **Date**: [date]
 **Language(s) detected**: [languages]
-**AI Intensity**: [estimated level] / 10
+**AI Intensity Profile**: [Found — ai-intensity.yaml / Not found]
 
 ---
 
@@ -293,19 +353,40 @@ The number (0-10) is only an entry point. The **real value** is the RSQKit guida
 
 ---
 
-## 4. AI Spectrum Assessment
+## 4. AI Usage Determination
 
-**Estimated current position**: Level X / 10 — [description]
+**Profile**: [Found — ai-intensity.yaml present / Not found]
 
-**Analysis**:
-- [indicators found in the repository]
+### If profile found:
 
-**Recommendations**:
-- [suggestions to adjust AI intensity]
+**Self-determined intensity levels** (RSQKit spectrum 0-10):
 
-**RSQKit References**:
-- https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
-- https://everse.software/RSQKit/cross_cutting_practices
+| Dimension | Level | User's notes |
+|---|---|---|
+| Current usage | X / 10 | [summary from profile] |
+| Desired | X / 10 | [summary from profile] |
+| Authorized | X / 10 | [summary from profile] |
+| Sustainable | X / 10 | [summary from profile] |
+
+> **RSQKit**: "It is not a maturity scale. Higher intensity does not mean better practice. It does not mean higher skill. It does not mean better quality."
+> — [Spectrum of Intensity of AI Usage](https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage)
+
+**RSQKit considerations** (questions for the user, not tool recommendations):
+- Where does your project sit? Where should it sit?
+- Where do you sit? Where do you want to be? Where should you be?
+- Move up when greater intensity solves a real problem.
+- Move down when a simpler practice provides the same benefit.
+- Source: https://everse.software/RSQKit/ai_intensity_considerations
+
+### If profile absent:
+
+> No AI intensity profile (`ai-intensity.yaml`) found in this repository.
+>
+> The RSQKit AI spectrum is a **self-assessment framework** — it cannot be
+> determined by scanning repository files. To determine your AI intensity,
+> run the **AI Intensity Q&A skill**.
+>
+> See: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
 ```
 
 ### 7. Interactive Remediation — Contextual Generation
@@ -397,8 +478,99 @@ The SKILL.md will contain:
 2. **Workflow** (analysis steps)
 3. **10 checks reference** (criteria, levels, recommendations)
 4. **Report template** (Markdown structure)
-5. **AI spectrum** (0-10 evaluation criteria + guidance per level)
+5. **AI intensity profile reader** (reads `ai-intensity.yaml` if present, presents neutrally)
 6. **Interactive remediation instructions** (contextual generation + chains)
+
+---
+
+## AI Intensity Q&A Skill (separate skill)
+
+A standalone opencode skill, separate from `everse-scan`. It conducts an interactive self-assessment of the user's AI usage intensity according to the RSQKit spectrum (0-10) and saves the result to `ai-intensity.yaml`.
+
+### Architecture
+
+```
+.opencode/skills/ai-intensity/
+├── SKILL.md              # Q&A workflow + RSQKit spectrum reference
+└── (no external dependencies)
+```
+
+### Description (natural triggering)
+
+Triggers when the user asks to determine, assess, or figure out their AI usage intensity:
+
+- "What AI intensity level should I use?"
+- "Determine my AI intensity"
+- "What level of AI is appropriate for my project?"
+- "Am I using too much AI?"
+- "ai-intensity"
+
+### Q&A Workflow
+
+The skill walks the user through **four dimensions**, one question at a time. Each question presents the relevant RSQKit spectrum descriptions to help the user self-assess. The skill **never assigns a level** — it helps the user **determine their own**.
+
+#### Dimension 1: Current Usage ("Where do you sit?")
+
+> "What AI tools do you currently use in your research software work?"
+
+Present the spectrum levels (0-10) with RSQKit descriptions as reference. The user picks the level that matches their current practice.
+
+| Level | RSQKit description (shown to user) |
+|---|---|
+| 0 | No Gen-AI usage — work without generative AI assistance |
+| 1 | Conversational interaction — explanations, design trade-offs, conceptual help |
+| 2 | Conversational artefact creation — small reviewable outputs in chat |
+| 3 | Conversational creation with zip files — providing selected files for context |
+| 4 | IDE autocomplete and inline suggestions — AI suggests code while editing |
+| 5 | Editor-integrated local assistant — bounded edits inside the editor |
+| 6 | Repository-aware assistance — AI can search and reason across the repo |
+| 7 | Constrained local tool-using agents — agent edits files, runs commands, iterates |
+| 8 | Managed or cloud coding agents — hosted agent works asynchronously |
+| 9 | CI/PR/repository agents — agents integrated into shared project workflows |
+| 10 | Open-ended autonomous agents — broad tool-using systems with persistence |
+
+Source: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
+
+#### Dimension 2: Desired Intensity ("Where do you want to be?")
+
+> "What level of AI autonomy do you want to work toward?"
+
+Same spectrum presented. The skill asks follow-up questions to understand motivation:
+- What tasks would benefit from more AI?
+- What's holding you back from higher intensity?
+- What would need to change for you to be comfortable at a higher level?
+
+#### Dimension 3: Authorized Intensity ("Where should you be?")
+
+> "What level of AI is allowed or authorized in your context?"
+
+Explores external constraints:
+- Does your project have an AI usage policy?
+- Does your institution or funder have restrictions?
+- Is there sensitive data that limits what can be shared with AI tools?
+- Are there ethical or environmental considerations?
+
+#### Dimension 4: Review Capacity (sustainability)
+
+> "How much review capacity do you have? What are you comfortable reviewing?"
+
+Explores the sustainability of the chosen intensity:
+- Are you solo or on a team?
+- How much time can you dedicate to reviewing AI-generated work?
+- What types of changes are you comfortable reviewing?
+- What would overwhelm your review capacity?
+
+### Output: `ai-intensity.yaml`
+
+See Section 5.3 for the file format. The skill generates this file after the Q&A, presents it to the user for review, and writes it only after explicit confirmation.
+
+### Principles
+
+1. **Self-determination** — the user decides, the skill facilitates
+2. **Neutrality** — no level is presented as better than another
+3. **RSQKit fidelity** — use RSQKit's own descriptions, don't paraphrase
+4. **No detection** — never infer AI usage from repository files
+5. **Persistence** — the profile is committed to the repo so collaborators and agents can respect it
 
 ---
 
@@ -428,9 +600,9 @@ Already specified in section 3.1. Implementation in the skill via heuristics:
 - Count authors via `git log --format='%aN' | sort -u | wc -l`
 - Check for releases/tags presence via `git tag`
 
-### 3. AI Spectrum Guidance (not just the number)
+### 3. AI Intensity Profile Reader
 
-Already specified in section 5.1. The SKILL.md embeds the guidance content for each level.
+Already specified in section 5.4. The skill reads `ai-intensity.yaml` (created by the separate AI Intensity Q&A skill) and presents it neutrally. No detection from repo files.
 
 ### 4. Remediation Chains
 
@@ -648,7 +820,7 @@ everse-scan/
 | **Deliverable** | `.opencode/skills/everse-scan/SKILL.md` |
 | **Checks** | 10 V1 checks (README, LICENSE, CITATION.cff, codemeta.json, tests, CI/CD, structure, docs, packaging, version control) |
 | **Detection** | Multi-language (Python, R, C++, Julia, JS/TS) |
-| **Report** | Markdown: executive summary + action plan + technical details + AI spectrum |
+| **Report** | Markdown: executive summary + action plan + technical details + AI intensity profile (if present) |
 | **Remediation** | Simple interactive menu (list of files to generate) |
 | **Repositories** | Local + remote (GitHub URLs) |
 | **Completion criterion** | Scan of a real Python repo → complete report generated in one session |
@@ -661,13 +833,26 @@ everse-scan/
 |---|---|
 | **Tier detection** | Heuristics script / tool-library / infrastructure |
 | **RSQKit tools per check** | Embedded table (pytest, ruff, Sphinx, etc. by language) |
-| **AI spectrum guidance** | Content per level (not just the number), cross-cutting practices |
+| **AI intensity** | Reads `ai-intensity.yaml` profile (from the AI Intensity Q&A skill). Presents neutrally. No detection from repo files. |
 | **Contextual remediation** | Pre-fill CITATION.cff / codemeta.json from git log + README + LICENSE |
 | **Remediation chains** | Citation chain, CI chain, metadata chain |
 | **Lifecycle detection** | Early / active dev / maintenance / published |
 | **Quality dimensions** | Scorecard reproducibility / maintainability / findability / trustworthiness |
 | **Non-covered tasks** | Explicit disclosure of the 25+ non-evaluated RSQKit tasks |
-| **Completion criterion** | Scan of a Python + R repo → report with detected tier, recommended tools, proposed chains, pre-filled CITATION.cff |
+| **Completion criterion** | Scan of a Python + R repo → report with detected tier, recommended tools, proposed chains, pre-filled CITATION.cff. AI intensity section reads profile if present. |
+
+### M2b — AI Intensity Q&A Skill (separate skill)
+
+**Objective**: Standalone opencode skill for self-determination of AI usage intensity per RSQKit spectrum.
+
+| Item | Detail |
+|---|---|
+| **Deliverable** | `.opencode/skills/ai-intensity/SKILL.md` |
+| **Q&A dimensions** | Current usage, desired intensity, authorized intensity, review capacity |
+| **Output** | `ai-intensity.yaml` (AI Declaration Format conventions, separate from `aidecl.yaml`) |
+| **Spectrum** | RSQKit 0-10 with full descriptions per level |
+| **Principles** | Self-determination, neutrality, no detection from repo files |
+| **Completion criterion** | User runs the Q&A → `ai-intensity.yaml` generated → `everse-scan` reads it and includes it neutrally in the report |
 
 ### M3 — Python CLI V2: Core
 

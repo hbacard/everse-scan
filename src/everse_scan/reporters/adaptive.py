@@ -14,7 +14,7 @@ from everse_scan.reporters.markdown import (
     STATUS_ICONS,
     _tier_label,
     _lifecycle_label,
-    _ai_guidance,
+    _ai_profile_section,
 )
 from everse_scan.priorities import (
     prioritize_checks,
@@ -125,11 +125,21 @@ def _researcher_report(result: ScanResult) -> str:
     lines.append("")
 
     # AI note
-    if result.ai_intensity > 0:
+    if result.ai_intensity_profile.found:
+        p = result.ai_intensity_profile
         lines.append("## AI usage")
         lines.append("")
-        lines.append(f"This repository shows some AI usage indicators (level {result.ai_intensity}/10).")
-        lines.append("This is fine -- just make sure a human reviews AI-generated code before publishing.")
+        lines.append("An AI intensity profile (`ai-intensity.yaml`) was found in this repository.")
+        lines.append("")
+        if p.current is not None:
+            lines.append(f"- **Current usage**: level {p.current}/10")
+        if p.desired is not None:
+            lines.append(f"- **Desired**: level {p.desired}/10")
+        if p.authorized is not None:
+            lines.append(f"- **Authorized**: level {p.authorized}/10")
+        lines.append("")
+        lines.append("> This is a self-determination by the project's users, not a tool evaluation.")
+        lines.append("> See: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage")
         lines.append("")
 
     lines.append("---")
@@ -152,7 +162,7 @@ def _rse_report(result: ScanResult) -> str:
     lines.append(f"**Language(s)**: {langs}")
     lines.append(f"**Tier**: {_tier_label(result.tier)}")
     lines.append(f"**Lifecycle**: {_lifecycle_label(result.lifecycle)}")
-    lines.append(f"**AI Intensity**: {result.ai_intensity}/10")
+    lines.append(f"**AI Intensity Profile**: {'Found' if result.ai_intensity_profile.found else 'Not found'}")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -217,19 +227,8 @@ def _rse_report(result: ScanResult) -> str:
         lines.append(f"| {name} | {score} | {checks_list} |")
     lines.append("")
 
-    # AI guidance
-    lines.append("## AI assessment")
-    lines.append("")
-    lines.append(f"Level: {result.ai_intensity}/10")
-    lines.append("")
-    if result.ai_indicators:
-        for ind in result.ai_indicators:
-            lines.append(f"- {ind}")
-    else:
-        lines.append("- No AI indicators found")
-    lines.append("")
-    lines.append(_ai_guidance(result.ai_intensity))
-    lines.append("")
+    # AI profile
+    lines.extend(_ai_profile_section(result.ai_intensity_profile))
 
     lines.append("---")
     lines.append("")

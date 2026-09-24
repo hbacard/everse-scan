@@ -117,7 +117,7 @@ class TestMarkdownReporter:
         assert "## 1. Executive Summary" in md
         assert "## 2. Prioritized Action Plan" in md
         assert "## 3. Technical Details by Task" in md
-        assert "## 4. AI Spectrum Assessment" in md
+        assert "## 4. AI Usage Determination" in md
 
     def test_markdown_has_all_checks(self, sample_repo):
         result = scan_repo(str(sample_repo))

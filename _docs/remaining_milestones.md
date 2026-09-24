@@ -37,8 +37,8 @@ git merge feat/cli-python
 - 10 V1 checks: README, LICENSE, CITATION.cff, codemeta.json, Structure, Version control, Tests, Documentation, CI/CD, Packaging
 - Multi-language detection (Python, R, C++, Julia, JS/TS, Rust, Go, Java, Ruby)
 - Local + remote repository support (GitHub clone)
-- Markdown report template: executive summary + prioritized action plan + technical details per task + AI spectrum
-- AI spectrum assessment (0-10) with detection indicators
+- Markdown report template: executive summary + prioritized action plan + technical details per task + AI intensity profile (if present)
+- AI intensity: reads `ai-intensity.yaml` if present (created by separate AI Intensity Q&A skill). No detection from repo files.
 - Disclosure of non-covered RSQKit tasks
 - Simple remediation menu
 
@@ -50,7 +50,7 @@ git merge feat/cli-python
 - Tier detection (three-tier model) with heuristics (script / tool-library / infrastructure) + check adaptation (N/A for tier 1)
 - Lifecycle detection (early / active dev / maintenance / published) via git log
 - RSQKit tools table by language (pytest/ruff/Sphinx for Python, testthat/lintr/pkgdown for R, etc.)
-- AI spectrum guidance per level with detailed content (0, 1-3, 4-6, 7-9, 10) + cross-cutting practices + AI intensity considerations
+- AI intensity: reads `ai-intensity.yaml` profile and presents it neutrally. No detection from repo files. Links to RSQKit spectrum and considerations pages.
 - Quality dimensions: scorecard reproducibility / maintainability / findability / trustworthiness / reusability
 - Contextual remediation: pre-fill CITATION.cff / codemeta.json from git log + README + LICENSE, with preview → confirmation → write flow
 - Remediation chains: citation chain (→ Zenodo → DOI), CI chain (→ linting → dependabot → PR template), metadata chain (→ .zenodo.json → validation)
@@ -66,7 +66,7 @@ git merge feat/cli-python
 - Multi-language detection (`languages/detector.py`) with extension counting + config files + version files
 - Tier detection (`context/tier.py`) with heuristics (source file count, packaging, git authors, tags, CI, Docker, docs)
 - Lifecycle detection (`context/lifecycle.py`) via git log (commits, recent activity, tags, DOI)
-- AI intensity detection (scanner.py) via indicators (.cursorrules, AGENTS.md, .opencode/, AI workflows, README mentions)
+- AI intensity profile reader (scanner.py) — reads `ai-intensity.yaml` if present. No file-based detection.
 - Reporters: structured JSON (`reporters/json.py`) + full Markdown (`reporters/markdown.py`) with executive summary, quality dimensions, action plan, technical details, AI guidance
 - Data models (`models.py`): CheckResult, ScanResult, CheckStatus (pass/warn/fail/na)
 - Scanner orchestration (`scanner.py`): orchestrates the 17 checks + context + AI

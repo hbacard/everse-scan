@@ -5,7 +5,7 @@ description = "Research repository analysis tool: generates a structured report 
 authors = [
     {name = "Hugo",email = "hugo.bacard@ijclab.in2p3.fr"},
 ]
-dependencies = []
+dependencies = ["PyYAML>=6.0"]
 requires-python = ">=3.12,<3.14"
 readme = "README.md"
 license = {text = "MIT"}
