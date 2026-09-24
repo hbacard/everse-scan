@@ -200,10 +200,13 @@ def generate_markdown(result: ScanResult) -> str:
     fails = [c for c in result.checks if c.status == CheckStatus.FAIL and c.category != "security"]
     warns = [c for c in result.checks if c.status == CheckStatus.WARN]
 
+    def _guide_ref(url: str) -> str:
+        return f" (cf. {url})" if url else ""
+
     lines.append("### Critical Risks (address first if detected)")
     if critical:
         for c in critical:
-            lines.append(f"1. 🔴 {c.message} — **impact: critical** ({c.rsqkit_url})")
+            lines.append(f"1. 🔴 {c.message} — **impact: critical**{(' (' + c.rsqkit_url + ')') if c.rsqkit_url else ''}")
     else:
         lines.append("- No critical risks detected")
     lines.append("")
@@ -213,11 +216,11 @@ def generate_markdown(result: ScanResult) -> str:
     if quick_wins:
         for c in quick_wins:
             rec = c.recommendations[0] if c.recommendations else "Fix this issue"
-            lines.append(f"1. {rec} (cf. {c.rsqkit_url}) — **impact: high**")
+            lines.append(f"1. {rec}{_guide_ref(c.rsqkit_url)} — **impact: high**")
     elif warns:
         for c in warns[:3]:
             rec = c.recommendations[0] if c.recommendations else "Improve this check"
-            lines.append(f"1. {rec} (cf. {c.rsqkit_url}) — **impact: moderate**")
+            lines.append(f"1. {rec}{_guide_ref(c.rsqkit_url)} — **impact: moderate**")
     else:
         lines.append("- No quick wins needed")
     lines.append("")
@@ -227,7 +230,7 @@ def generate_markdown(result: ScanResult) -> str:
     if remaining_warns:
         for c in remaining_warns[:5]:
             rec = c.recommendations[0] if c.recommendations else "Improve this check"
-            lines.append(f"1. {rec} (cf. {c.rsqkit_url})")
+            lines.append(f"1. {rec}{_guide_ref(c.rsqkit_url)}")
     else:
         lines.append("- Nothing to report")
     lines.append("")
@@ -237,7 +240,7 @@ def generate_markdown(result: ScanResult) -> str:
     if long_term:
         for c in long_term:
             rec = c.recommendations[0] if c.recommendations else "Fix this issue"
-            lines.append(f"1. {rec} (cf. {c.rsqkit_url})")
+            lines.append(f"1. {rec}{_guide_ref(c.rsqkit_url)}")
     else:
         lines.append("- Nothing to report")
     lines.append("")
@@ -265,7 +268,8 @@ def generate_markdown(result: ScanResult) -> str:
     for i, c in enumerate(result.checks, 1):
         lines.append(f"### 3.{i} {c.name}")
         lines.append(f"**Status**: {STATUS_ICONS[c.status]}")
-        lines.append(f"**RSQKit**: {c.rsqkit_url}")
+        if c.rsqkit_url:
+            lines.append(f"**RSQKit**: {c.rsqkit_url}")
         lines.append("")
         lines.append("**Findings**:")
         for d in c.details:

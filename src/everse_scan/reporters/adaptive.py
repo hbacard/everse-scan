@@ -85,7 +85,8 @@ def _researcher_report(result: ScanResult) -> str:
         if c.status != CheckStatus.PASS and c.recommendations:
             for rec in c.recommendations:
                 lines.append(f"  - {rec}")
-        lines.append(f"  - [RSQKit guide]({c.rsqkit_url})")
+        if c.rsqkit_url:
+            lines.append(f"  - [RSQKit guide]({c.rsqkit_url})")
     lines.append("")
 
     # Quick wins
@@ -98,7 +99,8 @@ def _researcher_report(result: ScanResult) -> str:
             rec = c.recommendations[0] if c.recommendations else c.message
             lines.append(f"1. **{c.name}**: {rec}")
             lines.append(f"   - Effort: {EFFORT_LABELS[p.effort]} | Impact: {IMPACT_LABELS[p.impact]}")
-            lines.append(f"   - [Guide]({c.rsqkit_url})")
+            if c.rsqkit_url:
+                lines.append(f"   - [Guide]({c.rsqkit_url})")
     else:
         lines.append("No quick wins needed -- great job!")
     lines.append("")

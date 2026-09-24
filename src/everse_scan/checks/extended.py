@@ -31,7 +31,7 @@ def check_authorship(repo_path: str) -> CheckResult:
             status=CheckStatus.PASS,
             message="Authorship information found",
             details=details,
-            rsqkit_url="https://everse.software/RSQKit/authorship_and_contributions",
+            rsqkit_url="https://everse.software/RSQKit/credit_recognition_research_software",
             category="fair",
         )
     return CheckResult(
@@ -40,7 +40,7 @@ def check_authorship(repo_path: str) -> CheckResult:
         message="No authorship metadata found (CITATION.cff, codemeta.json, or AUTHORS)",
         details=details,
         recommendations=["Add authorship info to CITATION.cff or codemeta.json"],
-        rsqkit_url="https://everse.software/RSQKit/authorship_and_contributions",
+        rsqkit_url="https://everse.software/RSQKit/credit_recognition_research_software",
         category="fair",
     )
 
@@ -66,7 +66,7 @@ def check_orcid(repo_path: str) -> CheckResult:
             status=CheckStatus.PASS,
             message=f"ORCID references found in: {', '.join(found_in)}",
             details=[f"ORCID found in {f}" for f in found_in],
-            rsqkit_url="https://everse.software/RSQKit/orcid_integration",
+            rsqkit_url="https://everse.software/RSQKit/software_metadata",
             category="fair",
         )
     return CheckResult(
@@ -75,7 +75,7 @@ def check_orcid(repo_path: str) -> CheckResult:
         message="No ORCID references found in metadata files",
         details=["ORCID pattern not found in any metadata file"],
         recommendations=["Add ORCID to CITATION.cff authors or codemeta.json"],
-        rsqkit_url="https://everse.software/RSQKit/orcid_integration",
+        rsqkit_url="https://everse.software/RSQKit/software_metadata",
         category="fair",
     )
 
@@ -108,7 +108,7 @@ def check_dependency_management(repo_path: str) -> CheckResult:
             status=CheckStatus.PASS,
             message=f"Dependency management configured: {', '.join(found)}",
             details=details,
-            rsqkit_url="https://everse.software/RSQKit/dependency_management",
+            rsqkit_url="https://everse.software/RSQKit/software_maintenance",
             category="engineering",
         )
     return CheckResult(
@@ -117,7 +117,7 @@ def check_dependency_management(repo_path: str) -> CheckResult:
         message="No dependency management tool found (Dependabot, Renovate)",
         details=["No dependabot.yml, renovate.json, or .renovaterc found"],
         recommendations=["Add Dependabot: .github/dependabot.yml", "Or add Renovate: renovate.json"],
-        rsqkit_url="https://everse.software/RSQKit/dependency_management",
+        rsqkit_url="https://everse.software/RSQKit/software_maintenance",
         category="engineering",
     )
 
@@ -150,7 +150,7 @@ def check_containers(repo_path: str) -> CheckResult:
             status=CheckStatus.PASS,
             message=f"Container support: {', '.join(found)}",
             details=details,
-            rsqkit_url="https://everse.software/RSQKit/containerization",
+            rsqkit_url="https://everse.software/RSQKit/using_containers",
             category="engineering",
         )
     return CheckResult(
@@ -159,7 +159,7 @@ def check_containers(repo_path: str) -> CheckResult:
         message="No containerization files found",
         details=["No Dockerfile or docker-compose found"],
         recommendations=["Add a Dockerfile for reproducible deployment"],
-        rsqkit_url="https://everse.software/RSQKit/containerization",
+        rsqkit_url="https://everse.software/RSQKit/using_containers",
         category="engineering",
     )
 
@@ -235,7 +235,7 @@ def check_api_docs(repo_path: str) -> CheckResult:
             status=CheckStatus.PASS,
             message=f"API documentation found: {', '.join(found)}",
             details=details,
-            rsqkit_url="https://everse.software/RSQKit/api_documentation",
+            rsqkit_url="https://everse.software/RSQKit/software_documentation",
             category="engineering",
         )
     return CheckResult(
@@ -244,7 +244,7 @@ def check_api_docs(repo_path: str) -> CheckResult:
         message="No API documentation found (OpenAPI/Swagger or docs/api)",
         details=["No openapi.yaml/json, swagger.yaml/json, or docs/api.md found"],
         recommendations=["Add API documentation (OpenAPI spec or docs/api.md)"],
-        rsqkit_url="https://everse.software/RSQKit/api_documentation",
+        rsqkit_url="https://everse.software/RSQKit/software_documentation",
         category="engineering",
     )
 
@@ -263,7 +263,7 @@ def check_changelog(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS if has_entries else CheckStatus.WARN,
                 message=f"Changelog found: {f}" + ("" if has_entries else " (but may be empty)"),
                 details=[f"File: {f}", f"Has entries: {has_entries}"],
-                rsqkit_url="https://everse.software/RSQKit/changelog",
+                rsqkit_url="https://everse.software/RSQKit/releasing_software",
                 category="documentation",
             )
 
@@ -273,7 +273,7 @@ def check_changelog(repo_path: str) -> CheckResult:
         message="No changelog file found",
         details=["No CHANGELOG.md, CHANGES.md, or similar found"],
         recommendations=["Add a CHANGELOG.md to track version history"],
-        rsqkit_url="https://everse.software/RSQKit/changelog",
+        rsqkit_url="https://everse.software/RSQKit/releasing_software",
         category="documentation",
     )
 
@@ -288,7 +288,7 @@ def check_contribution_guide(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Contribution guide found: {f}",
                 details=[f"File: {f}"],
-                rsqkit_url="https://everse.software/RSQKit/contribution_guidelines",
+                rsqkit_url="",
                 category="documentation",
             )
     return CheckResult(
@@ -297,7 +297,7 @@ def check_contribution_guide(repo_path: str) -> CheckResult:
         message="No CONTRIBUTING.md found",
         details=["No CONTRIBUTING.md or .github/CONTRIBUTING.md found"],
         recommendations=["Add CONTRIBUTING.md with guidelines for contributors"],
-        rsqkit_url="https://everse.software/RSQKit/contribution_guidelines",
+        rsqkit_url="",
         category="documentation",
     )
 
@@ -312,7 +312,7 @@ def check_code_of_conduct(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Code of conduct found: {f}",
                 details=[f"File: {f}"],
-                rsqkit_url="https://everse.software/RSQKit/code_of_conduct",
+                rsqkit_url="",
                 category="documentation",
             )
     return CheckResult(
@@ -321,7 +321,7 @@ def check_code_of_conduct(repo_path: str) -> CheckResult:
         message="No CODE_OF_CONDUCT.md found",
         details=["No CODE_OF_CONDUCT.md found"],
         recommendations=["Add CODE_OF_CONDUCT.md (see Contributor Covenant)"],
-        rsqkit_url="https://everse.software/RSQKit/code_of_conduct",
+        rsqkit_url="",
         category="documentation",
     )
 
@@ -338,7 +338,7 @@ def check_issue_templates(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Issue templates found: {len(templates)}",
                 details=[f"Templates: {', '.join(t.name for t in templates)}"],
-                rsqkit_url="https://everse.software/RSQKit/issue_templates",
+                rsqkit_url="",
                 category="documentation",
             )
     return CheckResult(
@@ -347,7 +347,7 @@ def check_issue_templates(repo_path: str) -> CheckResult:
         message="No issue templates found",
         details=["No .github/ISSUE_TEMPLATE/ directory or templates"],
         recommendations=["Add issue templates in .github/ISSUE_TEMPLATE/"],
-        rsqkit_url="https://everse.software/RSQKit/issue_templates",
+        rsqkit_url="",
         category="documentation",
     )
 
@@ -381,7 +381,7 @@ def check_secret_management(repo_path: str) -> CheckResult:
             status=CheckStatus.PASS,
             message=f"Good secret management practices ({score} indicators)",
             details=details,
-            rsqkit_url="https://everse.software/RSQKit/secret_management",
+            rsqkit_url="https://everse.software/RSQKit/research_software_security",
             category="security",
         )
     elif score == 1:
@@ -391,7 +391,7 @@ def check_secret_management(repo_path: str) -> CheckResult:
             message=f"Partial secret management ({score} indicator(s))",
             details=details,
             recommendations=["Add .env to .gitignore", "Add gitleaks to pre-commit hooks"],
-            rsqkit_url="https://everse.software/RSQKit/secret_management",
+            rsqkit_url="https://everse.software/RSQKit/research_software_security",
             category="security",
         )
     return CheckResult(
@@ -400,7 +400,7 @@ def check_secret_management(repo_path: str) -> CheckResult:
         message="No secret management practices found",
         details=["No .env in .gitignore, no secret scanning hooks"],
         recommendations=["Add .env to .gitignore", "Add gitleaks pre-commit hook"],
-        rsqkit_url="https://everse.software/RSQKit/secret_management",
+        rsqkit_url="https://everse.software/RSQKit/research_software_security",
         category="security",
     )
 
@@ -417,7 +417,7 @@ def check_data_management(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Data management plan found: {f}",
                 details=[f"File: {f}"],
-                rsqkit_url="https://everse.software/RSQKit/data_management",
+                rsqkit_url="https://everse.software/RSQKit/software_management_planning",
                 category="reproducibility",
             )
 
@@ -430,7 +430,7 @@ def check_data_management(repo_path: str) -> CheckResult:
                 status=CheckStatus.WARN,
                 message="Data directory with README found (partial DMP)",
                 details=["data/README.md found"],
-                rsqkit_url="https://everse.software/RSQKit/data_management",
+                rsqkit_url="https://everse.software/RSQKit/software_management_planning",
                 category="reproducibility",
             )
 
@@ -440,7 +440,7 @@ def check_data_management(repo_path: str) -> CheckResult:
         message="No data management plan found",
         details=["No DMP.md or DATA_MANAGEMENT_PLAN.md found"],
         recommendations=["Add a data management plan (DMP.md) if your software uses/produces data"],
-        rsqkit_url="https://everse.software/RSQKit/data_management",
+        rsqkit_url="https://everse.software/RSQKit/software_management_planning",
         category="reproducibility",
     )
 
@@ -461,7 +461,7 @@ def check_reproducibility_checklist(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Reproducibility checklist found: {f}",
                 details=[f"File: {f}"],
-                rsqkit_url="https://everse.software/RSQKit/reproducibility_checklist",
+                rsqkit_url="https://everse.software/RSQKit/reproducible_software_environments",
                 category="reproducibility",
             )
 
@@ -471,7 +471,7 @@ def check_reproducibility_checklist(repo_path: str) -> CheckResult:
         message="No reproducibility checklist found",
         details=["No REPRODUCIBILITY.md or CHECKLIST.md found"],
         recommendations=["Add a reproducibility checklist documenting how to reproduce results"],
-        rsqkit_url="https://everse.software/RSQKit/reproducibility_checklist",
+        rsqkit_url="https://everse.software/RSQKit/reproducible_software_environments",
         category="reproducibility",
     )
 
@@ -584,7 +584,7 @@ def check_sustainability_plan(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Sustainability plan found: {f}",
                 details=[f"File: {f}"],
-                rsqkit_url="https://everse.software/RSQKit/software_sustainability_plan",
+                rsqkit_url="https://everse.software/RSQKit/software_maintenance",
                 category="sustainability",
             )
     return CheckResult(
@@ -593,7 +593,7 @@ def check_sustainability_plan(repo_path: str) -> CheckResult:
         message="No sustainability plan found",
         details=["No SUSTAINABILITY.md or similar found"],
         recommendations=["Add a sustainability plan (SUSTAINABILITY.md)"],
-        rsqkit_url="https://everse.software/RSQKit/software_sustainability_plan",
+        rsqkit_url="https://everse.software/RSQKit/software_maintenance",
         category="sustainability",
     )
 
@@ -657,7 +657,7 @@ def check_software_peer_review(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message="JOSS paper found (peer review indicator)",
                 details=["paper/ directory with .tex or .md found"],
-                rsqkit_url="https://everse.software/RSQKit/software_peer_review",
+                rsqkit_url="https://everse.software/RSQKit/publishing_software",
                 category="quality",
             )
 
@@ -671,7 +671,7 @@ def check_software_peer_review(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message="Peer review badge/reference found in README",
                 details=["JOSS/rOpenSci/peer-reviewed reference in README"],
-                rsqkit_url="https://everse.software/RSQKit/software_peer_review",
+                rsqkit_url="https://everse.software/RSQKit/publishing_software",
                 category="quality",
             )
 
@@ -680,7 +680,7 @@ def check_software_peer_review(repo_path: str) -> CheckResult:
         status=CheckStatus.NA,
         message="No peer review indicators found (optional practice)",
         details=["No JOSS paper, rOpenSci badge, or peer review reference"],
-        rsqkit_url="https://everse.software/RSQKit/software_peer_review",
+        rsqkit_url="https://everse.software/RSQKit/publishing_software",
         category="quality",
     )
 
@@ -700,7 +700,7 @@ def check_quality_model(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message=f"Quality model documentation found: {f}",
                 details=[f"File: {f}"],
-                rsqkit_url="https://everse.software/RSQKit/software_quality_models",
+                rsqkit_url="https://everse.software/RSQKit/fair_rs",
                 category="quality",
             )
 
@@ -714,7 +714,7 @@ def check_quality_model(repo_path: str) -> CheckResult:
                 status=CheckStatus.PASS,
                 message="Quality model reference found in README",
                 details=["Quality model reference in README"],
-                rsqkit_url="https://everse.software/RSQKit/software_quality_models",
+                rsqkit_url="https://everse.software/RSQKit/fair_rs",
                 category="quality",
             )
 
@@ -723,6 +723,6 @@ def check_quality_model(repo_path: str) -> CheckResult:
         status=CheckStatus.NA,
         message="No software quality model adoption found (optional)",
         details=["No QUALITY.md or quality model references"],
-        rsqkit_url="https://everse.software/RSQKit/software_quality_models",
+        rsqkit_url="https://everse.software/RSQKit/fair_rs",
         category="quality",
     )
