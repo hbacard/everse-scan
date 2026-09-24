@@ -1,18 +1,18 @@
-# AI Intensity Q&A Skill
+---
+name: ai-intensity
+description: >-
+  A standalone opencode skill that conducts an interactive self-assessment of the user's AI usage intensity according to the RSQKit spectrum (0-10). It does NOT detect or infer AI usage from repository files. It asks the user questions and helps them determine their own level.
 
-## Description
+  Triggers when the user asks to determine, assess, or figure out their AI usage intensity:
 
-A standalone opencode skill that conducts an interactive self-assessment of the user's AI usage intensity according to the RSQKit spectrum (0-10). It does NOT detect or infer AI usage from repository files. It asks the user questions and helps them determine their own level.
-
-Triggers when the user asks to determine, assess, or figure out their AI usage intensity:
-
-- "What AI intensity level should I use?"
-- "Determine my AI intensity"
-- "What level of AI is appropriate for my project?"
-- "Am I using too much AI?"
-- "ai-intensity"
-- "assess my AI usage"
-- "help me figure out my AI spectrum level"
+  - "What AI intensity level should I use?"
+  - "Determine my AI intensity"
+  - "What level of AI is appropriate for my project?"
+  - "Am I using too much AI?"
+  - "ai-intensity"
+  - "assess my AI usage"
+  - "help me figure out my AI spectrum level"
+---
 
 ## Key principle
 
