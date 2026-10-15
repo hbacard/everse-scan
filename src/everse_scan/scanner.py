@@ -2,54 +2,52 @@
 
 from __future__ import annotations
 
-import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from everse_scan.models import CheckResult, CheckStatus, ScanResult, AIIntensityProfile
-from everse_scan.languages.detector import detect_languages, LanguageInfo
-from everse_scan.context.tier import detect_tier, TierResult, TIER_SCRIPT
-from everse_scan.context.lifecycle import detect_lifecycle, LifecycleResult
-from everse_scan.context.funder import detect_funder, FunderResult
-from everse_scan.checks.readme import check_readme
-from everse_scan.checks.license import check_license
-from everse_scan.checks.citation import check_citation
-from everse_scan.checks.codemeta import check_codemeta
-from everse_scan.checks.structure import check_structure
-from everse_scan.checks.version_control import check_version_control
-from everse_scan.checks.tests import check_tests
-from everse_scan.checks.documentation import check_documentation
 from everse_scan.checks.cicd import check_cicd
-from everse_scan.checks.packaging import check_packaging
-from everse_scan.checks.static_analysis import check_static_analysis
-from everse_scan.checks.security import check_security
-from everse_scan.checks.reproducible_envs import check_reproducible_envs
+from everse_scan.checks.citation import check_citation
 from everse_scan.checks.code_review import check_code_review
-from everse_scan.checks.software_identifiers import check_software_identifiers
-from everse_scan.checks.releasing import check_releasing
-from everse_scan.checks.readable_code import check_readable_code
+from everse_scan.checks.codemeta import check_codemeta
+from everse_scan.checks.documentation import check_documentation
 from everse_scan.checks.extended import (
-    check_authorship,
-    check_orcid,
-    check_dependency_management,
-    check_containers,
-    check_workflow_files,
     check_api_docs,
-    check_changelog,
-    check_contribution_guide,
-    check_code_of_conduct,
-    check_issue_templates,
-    check_secret_management,
-    check_data_management,
-    check_reproducibility_checklist,
     check_archiving,
-    check_future_proofing,
-    check_sustainability_plan,
+    check_authorship,
+    check_changelog,
+    check_code_of_conduct,
+    check_containers,
+    check_contribution_guide,
+    check_data_management,
+    check_dependency_management,
     check_env_sustainability,
-    check_software_peer_review,
+    check_future_proofing,
+    check_issue_templates,
+    check_orcid,
     check_quality_model,
+    check_reproducibility_checklist,
+    check_secret_management,
+    check_software_peer_review,
+    check_sustainability_plan,
+    check_workflow_files,
 )
+from everse_scan.checks.license import check_license
+from everse_scan.checks.packaging import check_packaging
+from everse_scan.checks.readable_code import check_readable_code
+from everse_scan.checks.readme import check_readme
+from everse_scan.checks.releasing import check_releasing
+from everse_scan.checks.reproducible_envs import check_reproducible_envs
+from everse_scan.checks.security import check_security
+from everse_scan.checks.software_identifiers import check_software_identifiers
+from everse_scan.checks.static_analysis import check_static_analysis
+from everse_scan.checks.structure import check_structure
+from everse_scan.checks.tests import check_tests
+from everse_scan.checks.version_control import check_version_control
+from everse_scan.context.funder import detect_funder
+from everse_scan.context.lifecycle import LifecycleResult, detect_lifecycle
+from everse_scan.context.tier import TierResult, detect_tier
+from everse_scan.languages.detector import LanguageInfo, detect_languages
+from everse_scan.models import AIIntensityProfile, CheckResult, CheckStatus, ScanResult
 
 
 def _read_ai_intensity_profile(repo_path: str) -> AIIntensityProfile:
@@ -64,6 +62,7 @@ def _read_ai_intensity_profile(repo_path: str) -> AIIntensityProfile:
 
     try:
         import yaml
+
         with open(profile_path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
 
@@ -162,9 +161,9 @@ def scan_repo(
 
     # Run integrations if requested
     if use_integrations:
-        from everse_scan.integrations.howfairis import check_howfairis
         from everse_scan.integrations.cffconvert import check_cffconvert
         from everse_scan.integrations.codemeta import check_codemeta_validation
+        from everse_scan.integrations.howfairis import check_howfairis
 
         checks.extend(check_howfairis(str(path)))
         checks.append(check_cffconvert(str(path)))
@@ -172,10 +171,18 @@ def scan_repo(
 
     # Adjust checks for tier 1 (script)
     if tier_result.is_script:
-        na_checks = ("codemeta.json", "CI/CD", "Packaging", "API documentation",
-                      "Computational workflows", "Software sustainability plan",
-                      "Environmental sustainability", "Software peer review",
-                      "Software quality model", "Containerization")
+        na_checks = (
+            "codemeta.json",
+            "CI/CD",
+            "Packaging",
+            "API documentation",
+            "Computational workflows",
+            "Software sustainability plan",
+            "Environmental sustainability",
+            "Software peer review",
+            "Software quality model",
+            "Containerization",
+        )
         for check in checks:
             if check.name in na_checks:
                 check.status = CheckStatus.NA

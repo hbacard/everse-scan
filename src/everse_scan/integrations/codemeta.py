@@ -10,7 +10,6 @@ from pathlib import Path
 
 from everse_scan.models import CheckResult, CheckStatus
 
-
 REQUIRED_CODEMETA_FIELDS = ["@context", "@type", "name", "author", "license"]
 RECOMMENDED_CODEMETA_FIELDS = ["version", "url", "identifier", "description", "codeRepository", "dateCreated"]
 
@@ -48,8 +47,12 @@ def check_codemeta_validation(repo_path: str) -> CheckResult:
     missing_recommended = [f for f in RECOMMENDED_CODEMETA_FIELDS if f not in data]
 
     details: list[str] = []
-    details.append(f"Required fields present: {sum(1 for f in REQUIRED_CODEMETA_FIELDS if f in data)}/{len(REQUIRED_CODEMETA_FIELDS)}")
-    details.append(f"Recommended fields present: {sum(1 for f in RECOMMENDED_CODEMETA_FIELDS if f in data)}/{len(RECOMMENDED_CODEMETA_FIELDS)}")
+    details.append(
+        f"Required fields present: {sum(1 for f in REQUIRED_CODEMETA_FIELDS if f in data)}/{len(REQUIRED_CODEMETA_FIELDS)}"
+    )
+    details.append(
+        f"Recommended fields present: {sum(1 for f in RECOMMENDED_CODEMETA_FIELDS if f in data)}/{len(RECOMMENDED_CODEMETA_FIELDS)}"
+    )
     if missing_required:
         details.append(f"Missing required: {', '.join(missing_required)}")
     if missing_recommended:

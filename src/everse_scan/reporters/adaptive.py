@@ -8,24 +8,21 @@ Roles:
 
 from __future__ import annotations
 
-from everse_scan.models import CheckResult, CheckStatus, ScanResult
-from everse_scan.reporters.markdown import (
-    generate_markdown,
-    STATUS_ICONS,
-    _tier_label,
-    _lifecycle_label,
-    _ai_profile_section,
-)
+from everse_scan.models import CheckStatus, ScanResult
 from everse_scan.priorities import (
-    prioritize_checks,
-    priority_label,
+    CRITICAL_FIX,
     EFFORT_LABELS,
     IMPACT_LABELS,
     QUICK_WIN,
-    CRITICAL_FIX,
-    STANDARD,
-    LONG_TERM,
-    LOW_PRIORITY,
+    prioritize_checks,
+    priority_label,
+)
+from everse_scan.reporters.markdown import (
+    STATUS_ICONS,
+    _ai_profile_section,
+    _lifecycle_label,
+    _tier_label,
+    generate_markdown,
 )
 
 ROLES = ("default", "researcher", "rse")
@@ -63,22 +60,20 @@ def _researcher_report(result: ScanResult) -> str:
     lines.append("")
     total = result.total
     pct = round(result.passed / total * 100) if total else 0
-    lines.append(
-        f"Your project passes **{result.passed}/{total}** ({pct}%) "
-        f"of the quality checks."
-    )
+    lines.append(f"Your project passes **{result.passed}/{total}** ({pct}%) of the quality checks.")
     lines.append("")
 
     # Citation & credit section first (researcher priority)
     lines.append("## Making your software citable")
     lines.append("")
     lines.append(
-        "If others use your software in their research, they need to cite it properly. "
-        "Here is what you should set up:"
+        "If others use your software in their research, they need to cite it properly. Here is what you should set up:"
     )
     lines.append("")
 
-    citation_checks = [c for c in result.checks if c.name in ("CITATION.cff", "codemeta.json", "Software identifiers", "LICENSE")]
+    citation_checks = [
+        c for c in result.checks if c.name in ("CITATION.cff", "codemeta.json", "Software identifiers", "LICENSE")
+    ]
     for c in citation_checks:
         icon = STATUS_ICONS[c.status]
         lines.append(f"- **{c.name}**: {icon}")
@@ -174,11 +169,23 @@ def _rse_report(result: ScanResult) -> str:
     lines.append("")
 
     # Engineering checks first
-    eng_checks = [c for c in result.checks if c.name in (
-        "Tests", "CI/CD", "Packaging", "Static analysis", "Code review",
-        "Reproducible environments", "Version control", "Structure",
-        "Releasing", "Readable code",
-    )]
+    eng_checks = [
+        c
+        for c in result.checks
+        if c.name
+        in (
+            "Tests",
+            "CI/CD",
+            "Packaging",
+            "Static analysis",
+            "Code review",
+            "Reproducible environments",
+            "Version control",
+            "Structure",
+            "Releasing",
+            "Readable code",
+        )
+    ]
     lines.append("## Engineering checks")
     lines.append("")
     lines.append("| Check | Status | Details |")
@@ -197,16 +204,28 @@ def _rse_report(result: ScanResult) -> str:
         lines.append("|---|-------|----------|--------|--------|--------|")
         for i, (c, q, p) in enumerate(prioritized, 1):
             action = c.recommendations[0] if c.recommendations else c.message
-            lines.append(f"| {i} | {c.name} | {priority_label(q)} | {EFFORT_LABELS[p.effort]} | {IMPACT_LABELS[p.impact]} | {action} |")
+            lines.append(
+                f"| {i} | {c.name} | {priority_label(q)} | {EFFORT_LABELS[p.effort]} | {IMPACT_LABELS[p.impact]} | {action} |"
+            )
     else:
         lines.append("All checks passing.")
     lines.append("")
 
     # FAIR/metadata checks
-    fair_checks = [c for c in result.checks if c.name in (
-        "README", "LICENSE", "CITATION.cff", "codemeta.json",
-        "Software identifiers", "Documentation", "Security",
-    )]
+    fair_checks = [
+        c
+        for c in result.checks
+        if c.name
+        in (
+            "README",
+            "LICENSE",
+            "CITATION.cff",
+            "codemeta.json",
+            "Software identifiers",
+            "Documentation",
+            "Security",
+        )
+    ]
     lines.append("## FAIR & metadata checks")
     lines.append("")
     lines.append("| Check | Status | Details |")
@@ -218,6 +237,7 @@ def _rse_report(result: ScanResult) -> str:
 
     # Quality dimensions
     from everse_scan.reporters.markdown import _quality_dimensions
+
     dims = _quality_dimensions(result)
     lines.append("## Quality dimensions")
     lines.append("")

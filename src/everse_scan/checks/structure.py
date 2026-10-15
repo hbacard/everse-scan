@@ -2,13 +2,23 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from everse_scan.models import CheckResult, CheckStatus
 
-IGNORE_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build",
-                ".pytest_cache", ".mypy_cache", ".ruff_cache", ".eggs"}
+IGNORE_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    "dist",
+    "build",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".eggs",
+}
 
 EXPECTED_DIRS = {"src", "tests", "docs", "examples", "test"}
 

@@ -5,15 +5,14 @@ Maps funders to their software compliance requirements.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
 class FunderRequirement:
     id: str
     description: str
-    related_check: str       # Check name in the scanner
+    related_check: str  # Check name in the scanner
     mandatory: bool = True  # Is this strictly required?
 
 
@@ -116,7 +115,7 @@ FUNDER_PROFILES: dict[str, FunderProfile] = {
 }
 
 
-def get_funder_profile(funder_id: str) -> Optional[FunderProfile]:
+def get_funder_profile(funder_id: str) -> FunderProfile | None:
     return FUNDER_PROFILES.get(funder_id)
 
 

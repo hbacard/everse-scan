@@ -70,8 +70,12 @@ def check_readable_code(repo_path: str, language: str | None = None) -> CheckRes
 
     recs = []
     if not found_formatters:
-        tool_rec = {"Python": "ruff format or black", "JavaScript/TypeScript": "prettier",
-                    "C/C++": "clang-format", "R": "styler"}.get(language or "", "a code formatter")
+        tool_rec = {
+            "Python": "ruff format or black",
+            "JavaScript/TypeScript": "prettier",
+            "C/C++": "clang-format",
+            "R": "styler",
+        }.get(language or "", "a code formatter")
         recs.append(f"Configure {tool_rec}")
     if not has_editorconfig:
         recs.append("Add an .editorconfig for consistent editor settings")

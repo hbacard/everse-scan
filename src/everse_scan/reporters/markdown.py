@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from everse_scan.models import CheckResult, CheckStatus, ScanResult
+from everse_scan.models import CheckStatus, ScanResult
 
 STATUS_ICONS = {
     CheckStatus.PASS: "✅ Pass",
@@ -58,9 +58,21 @@ def _quality_dimensions(result: ScanResult) -> list[tuple[str, str, str]]:
 
     return [
         ("Reproducibility", dim_status(["Packaging", "Tests", "CI/CD"]), "Packaging, Tests, CI/CD"),
-        ("Maintainability", dim_status(["Structure", "Documentation", "Readable code"]), "Structure, Documentation, Readable code"),
-        ("Findability", dim_status(["CITATION.cff", "codemeta.json", "Software identifiers"]), "CITATION.cff, codemeta.json, Software identifiers"),
-        ("Trustworthiness", dim_status(["Tests", "CI/CD", "Version control", "Security"]), "Tests, CI/CD, Version control, Security"),
+        (
+            "Maintainability",
+            dim_status(["Structure", "Documentation", "Readable code"]),
+            "Structure, Documentation, Readable code",
+        ),
+        (
+            "Findability",
+            dim_status(["CITATION.cff", "codemeta.json", "Software identifiers"]),
+            "CITATION.cff, codemeta.json, Software identifiers",
+        ),
+        (
+            "Trustworthiness",
+            dim_status(["Tests", "CI/CD", "Version control", "Security"]),
+            "Tests, CI/CD, Version control, Security",
+        ),
         ("Reusability", dim_status(["LICENSE", "README", "Documentation"]), "LICENSE, README, Documentation"),
     ]
 
@@ -103,20 +115,35 @@ def _ai_profile_section(profile) -> list[str]:
     lines.append("**Profile**: Found — `ai-intensity.yaml` present")
     lines.append("")
 
-    if profile.current is not None or profile.desired is not None or profile.authorized is not None or profile.sustainable is not None:
+    if (
+        profile.current is not None
+        or profile.desired is not None
+        or profile.authorized is not None
+        or profile.sustainable is not None
+    ):
         lines.append("**Self-determined intensity levels** (RSQKit spectrum 0-10):")
         lines.append("")
         lines.append("| Dimension | Level | User's notes |")
         lines.append("|---|---|---|")
-        lines.append(f"| Current usage | {profile.current if profile.current is not None else '—'} / 10 | {profile.current_usage or '—'} |")
-        lines.append(f"| Desired | {profile.desired if profile.desired is not None else '—'} / 10 | {profile.desired_intensity or '—'} |")
-        lines.append(f"| Authorized | {profile.authorized if profile.authorized is not None else '—'} / 10 | {profile.authorized_intensity or '—'} |")
-        lines.append(f"| Sustainable | {profile.sustainable if profile.sustainable is not None else '—'} / 10 | {profile.review_capacity or '—'} |")
+        lines.append(
+            f"| Current usage | {profile.current if profile.current is not None else '—'} / 10 | {profile.current_usage or '—'} |"
+        )
+        lines.append(
+            f"| Desired | {profile.desired if profile.desired is not None else '—'} / 10 | {profile.desired_intensity or '—'} |"
+        )
+        lines.append(
+            f"| Authorized | {profile.authorized if profile.authorized is not None else '—'} / 10 | {profile.authorized_intensity or '—'} |"
+        )
+        lines.append(
+            f"| Sustainable | {profile.sustainable if profile.sustainable is not None else '—'} / 10 | {profile.review_capacity or '—'} |"
+        )
         lines.append("")
 
-    lines.append("> **RSQKit**: \"It is not a maturity scale. Higher intensity does not mean better")
-    lines.append("> practice. It does not mean higher skill. It does not mean better quality.\"")
-    lines.append("> — [Spectrum of Intensity of AI Usage](https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage)")
+    lines.append('> **RSQKit**: "It is not a maturity scale. Higher intensity does not mean better')
+    lines.append('> practice. It does not mean higher skill. It does not mean better quality."')
+    lines.append(
+        "> — [Spectrum of Intensity of AI Usage](https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage)"
+    )
     lines.append("")
 
     if profile.determined_by:
@@ -214,8 +241,9 @@ def generate_markdown(result: ScanResult) -> str:
     # Disclosure
     lines.append("### Non-evaluated Tasks")
     lines.append("")
-    lines.append(f"> ⚠️ This scan evaluates {result.total} of the 35+ RSQKit tasks. "
-                 f"The following tasks are **not** evaluated:")
+    lines.append(
+        f"> ⚠️ This scan evaluates {result.total} of the 35+ RSQKit tasks. The following tasks are **not** evaluated:"
+    )
     lines.append(">")
     for name, url in UNCOVERED_TASKS:
         lines.append(f"> - [{name}]({url})")
@@ -240,7 +268,9 @@ def generate_markdown(result: ScanResult) -> str:
     lines.append("### Critical Risks (address first if detected)")
     if critical:
         for c in critical:
-            lines.append(f"1. 🔴 {c.message} — **impact: critical**{(' (' + c.rsqkit_url + ')') if c.rsqkit_url else ''}")
+            lines.append(
+                f"1. 🔴 {c.message} — **impact: critical**{(' (' + c.rsqkit_url + ')') if c.rsqkit_url else ''}"
+            )
     else:
         lines.append("- No critical risks detected")
     lines.append("")
@@ -283,8 +313,9 @@ def generate_markdown(result: ScanResult) -> str:
 
     # Funder compliance section (if funder detected)
     if result.funder:
-        from everse_scan.reporters.funder import generate_funder_section
         from everse_scan.context.funder import FunderResult
+        from everse_scan.reporters.funder import generate_funder_section
+
         funder_result = FunderResult(
             funder=result.funder,
             funder_label=result.funder_label,

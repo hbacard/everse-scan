@@ -4,19 +4,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 from everse_scan.models import CheckResult, CheckStatus
 
 REQUIRED_FIELDS = ["title", "authors", "date-released", "version"]
 
 
-
 def _parse_cff_fields(cff_file: Path) -> dict[str, str]:
     import yaml
-    with open(cff_file, 'r') as f_in:
+
+    with open(cff_file, "r") as f_in:
         fields = yaml.safe_load(f_in)
     return fields
-    
+
 
 def check_citation(repo_path: str) -> CheckResult:
     path = Path(repo_path)
@@ -36,11 +35,10 @@ def check_citation(repo_path: str) -> CheckResult:
             category="fair",
         )
 
-  
     fields = _parse_cff_fields(cff_file=cff_file)
 
     missing = [f for f in REQUIRED_FIELDS if f not in fields or not fields[f]]
-    present = [f for f in REQUIRED_FIELDS if f in fields and fields[f]]
+    present = [f for f in REQUIRED_FIELDS if fields.get(f)]
 
     details = [f"Found fields: {', '.join(present)}"] if present else ["No required fields found"]
     if missing:

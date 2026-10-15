@@ -7,9 +7,22 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 IGNORE_DIRS = {
-    ".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build",
-    ".pytest_cache", ".mypy_cache", ".ruff_cache", ".eggs", "*.egg-info",
-    ".tox", ".hypothesis", "htmlcov", ".coverage",
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    "dist",
+    "build",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".eggs",
+    "*.egg-info",
+    ".tox",
+    ".hypothesis",
+    "htmlcov",
+    ".coverage",
 }
 
 CONFIG_FILES = {

@@ -28,15 +28,20 @@ def check_releasing(repo_path: str) -> CheckResult:
     path = Path(repo_path)
 
     tags = _git_tags(path)
-    has_changelog = (path / "CHANGELOG.md").exists() or (path / "CHANGES.md").exists() or (path / "CHANGES.rst").exists()
+    has_changelog = (
+        (path / "CHANGELOG.md").exists() or (path / "CHANGES.md").exists() or (path / "CHANGES.rst").exists()
+    )
 
     # Check for semver compliance
     import re
+
     semver_tags = [t for t in tags if re.match(SEMVER_PATTERN, t.lstrip("v"))]
     has_semver = len(semver_tags) > 0
 
     # Check for GitHub releases (can't verify locally, but .github/release.yml exists?)
-    has_release_template = (path / ".github" / "release.yml").exists() or (path / ".github" / "release-drafter.yml").exists()
+    has_release_template = (path / ".github" / "release.yml").exists() or (
+        path / ".github" / "release-drafter.yml"
+    ).exists()
 
     details = [
         f"Git tags: {len(tags)} ({', '.join(tags[:5]) if tags else 'none'})",

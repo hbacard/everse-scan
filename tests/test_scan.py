@@ -1,20 +1,17 @@
 """Tests for everse-scan."""
 
 import json
-import tempfile
-from pathlib import Path
 
 import pytest
 
-from everse_scan.scanner import scan_repo
+from everse_scan.context.lifecycle import LIFECYCLE_EARLY, detect_lifecycle
+from everse_scan.context.tier import TIER_SCRIPT, TIER_TOOL, detect_tier
+from everse_scan.languages.detector import detect_languages
+from everse_scan.models import CheckStatus
 from everse_scan.reporters.json import generate_json
 from everse_scan.reporters.markdown import generate_markdown
-from everse_scan.models import CheckStatus
-from everse_scan.languages.detector import detect_languages
-from everse_scan.context.tier import detect_tier, TIER_SCRIPT, TIER_TOOL
-from everse_scan.context.lifecycle import detect_lifecycle, LIFECYCLE_EARLY
-
-from tests.fixtures import create_sample_repo, create_minimal_repo
+from everse_scan.scanner import scan_repo
+from tests.fixtures import create_minimal_repo, create_sample_repo
 
 
 @pytest.fixture
@@ -69,10 +66,23 @@ class TestScanner:
         check_names = {c.name for c in result.checks}
         # Core 17 checks must be present
         expected_core = {
-            "README", "LICENSE", "CITATION.cff", "codemeta.json", "Structure",
-            "Version control", "Tests", "Documentation", "CI/CD", "Packaging",
-            "Static analysis", "Security", "Reproducible environments",
-            "Code review", "Software identifiers", "Releasing", "Readable code",
+            "README",
+            "LICENSE",
+            "CITATION.cff",
+            "codemeta.json",
+            "Structure",
+            "Version control",
+            "Tests",
+            "Documentation",
+            "CI/CD",
+            "Packaging",
+            "Static analysis",
+            "Security",
+            "Reproducible environments",
+            "Code review",
+            "Software identifiers",
+            "Releasing",
+            "Readable code",
         }
         assert expected_core.issubset(check_names)
 

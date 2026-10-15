@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 
 class CheckStatus(str, Enum):
@@ -22,6 +21,7 @@ class AIIntensityProfile:
     users via the AI Intensity Q&A skill. everse-scan reads it neutrally.
     See: https://everse.software/RSQKit/spectrum_of_intensity_of_ai_usage
     """
+
     found: bool = False
     current: int | None = None
     desired: int | None = None
@@ -78,7 +78,7 @@ class ScanResult:
     repo_name: str
     date: str
     languages: list[str] = field(default_factory=list)
-    primary_language: Optional[str] = None
+    primary_language: str | None = None
     tier: str = ""
     tier_justification: str = ""
     tier_checks_adjusted: list[str] = field(default_factory=list)

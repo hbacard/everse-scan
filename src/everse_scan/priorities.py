@@ -3,49 +3,48 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
-from everse_scan.models import CheckResult, CheckStatus, ScanResult
+from everse_scan.models import CheckResult, CheckStatus
 
 
 # Effort levels: 1 (low) -> 3 (high)
 # Impact levels: 1 (low) -> 4 (critical)
 @dataclass(frozen=True)
 class Priority:
-    effort: int          # 1=low, 2=medium, 3=high
-    impact: int          # 1=low, 2=medium, 3=high, 4=critical
-    category: str = ""   # fair, engineering, security, documentation
+    effort: int  # 1=low, 2=medium, 3=high
+    impact: int  # 1=low, 2=medium, 3=high, 4=critical
+    category: str = ""  # fair, engineering, security, documentation
 
 
 # Base priorities per check name (when the check is failing/warning)
 _CHECK_PRIORITIES: dict[str, Priority] = {
-    "README":                  Priority(effort=1, impact=3, category="documentation"),
-    "LICENSE":                 Priority(effort=1, impact=3, category="fair"),
-    "CITATION.cff":            Priority(effort=1, impact=3, category="fair"),
-    "codemeta.json":           Priority(effort=2, impact=3, category="fair"),
-    "Structure":               Priority(effort=2, impact=2, category="engineering"),
-    "Version control":         Priority(effort=1, impact=3, category="engineering"),
-    "Tests":                   Priority(effort=3, impact=3, category="engineering"),
-    "Documentation":           Priority(effort=2, impact=2, category="documentation"),
-    "CI/CD":                   Priority(effort=2, impact=3, category="engineering"),
-    "Packaging":               Priority(effort=2, impact=2, category="engineering"),
-    "Static analysis":         Priority(effort=1, impact=2, category="engineering"),
-    "Security":                Priority(effort=2, impact=4, category="security"),
+    "README": Priority(effort=1, impact=3, category="documentation"),
+    "LICENSE": Priority(effort=1, impact=3, category="fair"),
+    "CITATION.cff": Priority(effort=1, impact=3, category="fair"),
+    "codemeta.json": Priority(effort=2, impact=3, category="fair"),
+    "Structure": Priority(effort=2, impact=2, category="engineering"),
+    "Version control": Priority(effort=1, impact=3, category="engineering"),
+    "Tests": Priority(effort=3, impact=3, category="engineering"),
+    "Documentation": Priority(effort=2, impact=2, category="documentation"),
+    "CI/CD": Priority(effort=2, impact=3, category="engineering"),
+    "Packaging": Priority(effort=2, impact=2, category="engineering"),
+    "Static analysis": Priority(effort=1, impact=2, category="engineering"),
+    "Security": Priority(effort=2, impact=4, category="security"),
     "Reproducible environments": Priority(effort=2, impact=3, category="engineering"),
-    "Code review":             Priority(effort=2, impact=2, category="engineering"),
-    "Software identifiers":    Priority(effort=1, impact=2, category="fair"),
-    "Releasing":               Priority(effort=2, impact=2, category="engineering"),
-    "Readable code":           Priority(effort=1, impact=1, category="engineering"),
+    "Code review": Priority(effort=2, impact=2, category="engineering"),
+    "Software identifiers": Priority(effort=1, impact=2, category="fair"),
+    "Releasing": Priority(effort=2, impact=2, category="engineering"),
+    "Readable code": Priority(effort=1, impact=1, category="engineering"),
 }
 
 EFFORT_LABELS = {1: "Low", 2: "Medium", 3: "High"}
 IMPACT_LABELS = {1: "Low", 2: "Medium", 3: "High", 4: "Critical"}
 
 # Priority quadrants
-QUICK_WIN = "quick_win"       # low effort, high+ impact
-CRITICAL_FIX = "critical"     # any effort, critical impact
-STANDARD = "standard"          # medium effort, medium impact
-LONG_TERM = "long_term"        # high effort, any impact
+QUICK_WIN = "quick_win"  # low effort, high+ impact
+CRITICAL_FIX = "critical"  # any effort, critical impact
+STANDARD = "standard"  # medium effort, medium impact
+LONG_TERM = "long_term"  # high effort, any impact
 LOW_PRIORITY = "low_priority"  # low impact
 
 

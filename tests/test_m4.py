@@ -1,32 +1,25 @@
 """Tests for M4: adaptive reporter, diff, and prioritization."""
 
-import json
-import tempfile
-from pathlib import Path
-
 import pytest
 
-from everse_scan.scanner import scan_repo
-from everse_scan.reporters.adaptive import generate_adaptive_markdown
-from everse_scan.reporters.diff import (
-    load_baseline,
-    compute_diff,
-    generate_diff_markdown,
-    save_baseline,
-)
+from everse_scan.models import CheckResult, CheckStatus
 from everse_scan.priorities import (
-    prioritize_checks,
+    CRITICAL_FIX,
+    QUICK_WIN,
+    STANDARD,
     classify,
     get_priority,
-    QUICK_WIN,
-    CRITICAL_FIX,
-    STANDARD,
-    LONG_TERM,
-    LOW_PRIORITY,
+    prioritize_checks,
 )
-from everse_scan.models import CheckResult, CheckStatus
-
-from tests.fixtures import create_sample_repo, create_minimal_repo
+from everse_scan.reporters.adaptive import generate_adaptive_markdown
+from everse_scan.reporters.diff import (
+    compute_diff,
+    generate_diff_markdown,
+    load_baseline,
+    save_baseline,
+)
+from everse_scan.scanner import scan_repo
+from tests.fixtures import create_minimal_repo, create_sample_repo
 
 
 @pytest.fixture
@@ -137,6 +130,7 @@ class TestAdaptiveReporter:
     def test_default_role_matches_markdown(self, sample_repo):
         result = scan_repo(str(sample_repo))
         from everse_scan.reporters.markdown import generate_markdown
+
         default_output = generate_adaptive_markdown(result, "default")
         markdown_output = generate_markdown(result)
         assert default_output == markdown_output
@@ -209,6 +203,7 @@ class TestDiffReporter:
 
         # Modify current result to have one more PASS
         from everse_scan.models import CheckStatus
+
         for check in result.checks:
             if check.status == CheckStatus.WARN:
                 check.status = CheckStatus.PASS
@@ -242,6 +237,7 @@ class TestDiffReporter:
 
         # Simulate improvement in current
         from everse_scan.models import CheckStatus
+
         for check in result.checks:
             if check.status == CheckStatus.WARN:
                 check.status = CheckStatus.PASS
@@ -254,10 +250,7 @@ class TestDiffReporter:
         assert "Progress Report" in md
         assert "Improvements" in md
         # Should show the check that improved
-        assert any(
-            name in md
-            for name, _, _ in compute_diff(baseline, result).improvements
-        )
+        assert any(name in md for name, _, _ in compute_diff(baseline, result).improvements)
 
     def test_diff_score_displayed(self, sample_repo):
         result = scan_repo(str(sample_repo))

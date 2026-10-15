@@ -18,8 +18,24 @@ SECRET_PATTERNS = [
     (r"password\s*=\s*['\"][^'\"]+['\"]", "Hardcoded password"),
 ]
 
-SECRET_FILE_EXTS = {".py", ".js", ".ts", ".jsx", ".tsx", ".env", ".yml", ".yaml",
-                    ".json", ".toml", ".cfg", ".ini", ".sh", ".rb", ".go", ".rs"}
+SECRET_FILE_EXTS = {
+    ".py",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".env",
+    ".yml",
+    ".yaml",
+    ".json",
+    ".toml",
+    ".cfg",
+    ".ini",
+    ".sh",
+    ".rb",
+    ".go",
+    ".rs",
+}
 IGNORE_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build"}
 
 

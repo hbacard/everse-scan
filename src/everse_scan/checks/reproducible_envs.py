@@ -74,8 +74,14 @@ def check_reproducible_envs(repo_path: str, language: str | None = None) -> Chec
         details.append(f"requirements.txt pinned: {'yes' if requirements_pinned else 'no'}")
 
     if found_lockfiles or found_containers or has_nix:
-        score = sum([bool(found_lockfiles), bool(found_containers), has_nix,
-                     requirements_pinned or "uv.lock" in found_lockfiles or "poetry.lock" in found_lockfiles])
+        score = sum(
+            [
+                bool(found_lockfiles),
+                bool(found_containers),
+                has_nix,
+                requirements_pinned or "uv.lock" in found_lockfiles or "poetry.lock" in found_lockfiles,
+            ]
+        )
         if score >= 2:
             status = CheckStatus.PASS
             msg = f"Reproducible environment configured ({', '.join(found_lockfiles + found_containers)})"
@@ -98,7 +104,7 @@ def check_reproducible_envs(repo_path: str, language: str | None = None) -> Chec
         status=status,
         message=msg,
         details=details,
-        recommendations=recs if 'recs' in dir() else [],
+        recommendations=recs if "recs" in dir() else [],
         rsqkit_url="https://everse.software/RSQKit/reproducible_software_environments",
         category="quality",
     )
