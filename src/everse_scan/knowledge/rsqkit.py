@@ -7,9 +7,7 @@ will be added for automated updates from GitHub RSQKit in a future iteration.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
-
+from dataclasses import dataclass
 
 RSQKIT_BASE = "https://everse.software/RSQKit"
 
@@ -19,68 +17,300 @@ class RSQKitTask:
     id: str
     name: str
     url: str
-    category: str           # fair, engineering, documentation, security, sustainability
-    covered_by: str         # check function name, "" if not covered
-    effort: str             # low, medium, high
-    impact: str             # low, medium, high, critical
+    category: str  # fair, engineering, documentation, security, sustainability
+    covered_by: str  # check function name, "" if not covered
+    effort: str  # low, medium, high
+    impact: str  # low, medium, high, critical
     description: str = ""
 
 
 # Full RSQKit task catalogue (35+ tasks)
 TASKS: list[RSQKitTask] = [
     # --- FAIR & metadata ---
-    RSQKitTask("readme", "Creating good README", f"{RSQKIT_BASE}/creating_good_readme", "documentation", "check_readme", "low", "high"),
-    RSQKitTask("license", "Licensing software", f"{RSQKIT_BASE}/licensing_software", "fair", "check_license", "low", "high"),
-    RSQKitTask("citation", "Citing software (CITATION.cff)", f"{RSQKIT_BASE}/citing_software", "fair", "check_citation", "low", "high"),
-    RSQKitTask("codemeta", "Complete software metadata (codemeta.json)", f"{RSQKIT_BASE}/complete_software_metadata_codemeta", "fair", "check_codemeta", "medium", "high"),
-    RSQKitTask("software_identifiers", "Software identifiers (DOI, Zenodo)", f"{RSQKIT_BASE}/software_identifiers", "fair", "check_software_identifiers", "low", "medium"),
-    RSQKitTask("authorship", "Authorship and contributions", f"{RSQKIT_BASE}/credit_recognition_research_software", "fair", "check_authorship", "low", "medium"),
+    RSQKitTask(
+        "readme",
+        "Creating good README",
+        f"{RSQKIT_BASE}/creating_good_readme",
+        "documentation",
+        "check_readme",
+        "low",
+        "high",
+    ),
+    RSQKitTask(
+        "license", "Licensing software", f"{RSQKIT_BASE}/licensing_software", "fair", "check_license", "low", "high"
+    ),
+    RSQKitTask(
+        "citation",
+        "Citing software (CITATION.cff)",
+        f"{RSQKIT_BASE}/citing_software",
+        "fair",
+        "check_citation",
+        "low",
+        "high",
+    ),
+    RSQKitTask(
+        "codemeta",
+        "Complete software metadata (codemeta.json)",
+        f"{RSQKIT_BASE}/complete_software_metadata_codemeta",
+        "fair",
+        "check_codemeta",
+        "medium",
+        "high",
+    ),
+    RSQKitTask(
+        "software_identifiers",
+        "Software identifiers (DOI, Zenodo)",
+        f"{RSQKIT_BASE}/software_identifiers",
+        "fair",
+        "check_software_identifiers",
+        "low",
+        "medium",
+    ),
+    RSQKitTask(
+        "authorship",
+        "Authorship and contributions",
+        f"{RSQKIT_BASE}/credit_recognition_research_software",
+        "fair",
+        "check_authorship",
+        "low",
+        "medium",
+    ),
     RSQKitTask("orcid", "ORCID integration", f"{RSQKIT_BASE}/software_metadata", "fair", "check_orcid", "low", "low"),
-
     # --- Engineering ---
-    RSQKitTask("structure", "Software project structure", f"{RSQKIT_BASE}/software_project_structure", "engineering", "check_structure", "medium", "medium"),
-    RSQKitTask("version_control", "Using version control", f"{RSQKIT_BASE}/using_version_control", "engineering", "check_version_control", "low", "high"),
-    RSQKitTask("testing", "Testing software", f"{RSQKIT_BASE}/testing_software", "engineering", "check_tests", "high", "high"),
+    RSQKitTask(
+        "structure",
+        "Software project structure",
+        f"{RSQKIT_BASE}/software_project_structure",
+        "engineering",
+        "check_structure",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "version_control",
+        "Using version control",
+        f"{RSQKIT_BASE}/using_version_control",
+        "engineering",
+        "check_version_control",
+        "low",
+        "high",
+    ),
+    RSQKitTask(
+        "testing", "Testing software", f"{RSQKIT_BASE}/testing_software", "engineering", "check_tests", "high", "high"
+    ),
     RSQKitTask("cicd", "CI/CD", f"{RSQKIT_BASE}/ci_cd", "engineering", "check_cicd", "medium", "high"),
-    RSQKitTask("packaging", "Packaging software", f"{RSQKIT_BASE}/packaging_software", "engineering", "check_packaging", "medium", "medium"),
-    RSQKitTask("static_analysis", "Static analysis", f"{RSQKIT_BASE}/static_analysis", "engineering", "check_static_analysis", "low", "medium"),
-    RSQKitTask("code_review", "Code review", f"{RSQKIT_BASE}/code_review", "engineering", "check_code_review", "medium", "medium"),
-    RSQKitTask("releasing", "Releasing software", f"{RSQKIT_BASE}/releasing_software", "engineering", "check_releasing", "medium", "medium"),
-    RSQKitTask("readable_code", "Writing readable code", f"{RSQKIT_BASE}/writing_readable_code", "engineering", "check_readable_code", "low", "low"),
-    RSQKitTask("dependency_management", "Dependency management", f"{RSQKIT_BASE}/software_maintenance", "engineering", "check_dependency_management", "low", "high"),
-    RSQKitTask("containers", "Containerization", f"{RSQKIT_BASE}/using_containers", "engineering", "check_containers", "medium", "medium"),
-    RSQKitTask("workflow_files", "Computational workflows", f"{RSQKIT_BASE}/computational_workflows", "engineering", "check_workflow_files", "medium", "low"),
-    RSQKitTask("api_docs", "API documentation", f"{RSQKIT_BASE}/software_documentation", "engineering", "check_api_docs", "medium", "medium"),
-
+    RSQKitTask(
+        "packaging",
+        "Packaging software",
+        f"{RSQKIT_BASE}/packaging_software",
+        "engineering",
+        "check_packaging",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "static_analysis",
+        "Static analysis",
+        f"{RSQKIT_BASE}/static_analysis",
+        "engineering",
+        "check_static_analysis",
+        "low",
+        "medium",
+    ),
+    RSQKitTask(
+        "code_review",
+        "Code review",
+        f"{RSQKIT_BASE}/code_review",
+        "engineering",
+        "check_code_review",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "releasing",
+        "Releasing software",
+        f"{RSQKIT_BASE}/releasing_software",
+        "engineering",
+        "check_releasing",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "readable_code",
+        "Writing readable code",
+        f"{RSQKIT_BASE}/writing_readable_code",
+        "engineering",
+        "check_readable_code",
+        "low",
+        "low",
+    ),
+    RSQKitTask(
+        "dependency_management",
+        "Dependency management",
+        f"{RSQKIT_BASE}/software_maintenance",
+        "engineering",
+        "check_dependency_management",
+        "low",
+        "high",
+    ),
+    RSQKitTask(
+        "containers",
+        "Containerization",
+        f"{RSQKIT_BASE}/using_containers",
+        "engineering",
+        "check_containers",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "workflow_files",
+        "Computational workflows",
+        f"{RSQKIT_BASE}/computational_workflows",
+        "engineering",
+        "check_workflow_files",
+        "medium",
+        "low",
+    ),
+    RSQKitTask(
+        "api_docs",
+        "API documentation",
+        f"{RSQKIT_BASE}/software_documentation",
+        "engineering",
+        "check_api_docs",
+        "medium",
+        "medium",
+    ),
     # --- Documentation ---
-    RSQKitTask("documentation", "Software documentation", f"{RSQKIT_BASE}/software_documentation", "documentation", "check_documentation", "medium", "medium"),
-    RSQKitTask("changelog", "Changelog", f"{RSQKIT_BASE}/releasing_software", "documentation", "check_changelog", "low", "low"),
-    RSQKitTask("contribution_guide", "Contribution guidelines", "", "documentation", "check_contribution_guide", "low", "medium"),
+    RSQKitTask(
+        "documentation",
+        "Software documentation",
+        f"{RSQKIT_BASE}/software_documentation",
+        "documentation",
+        "check_documentation",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "changelog", "Changelog", f"{RSQKIT_BASE}/releasing_software", "documentation", "check_changelog", "low", "low"
+    ),
+    RSQKitTask(
+        "contribution_guide",
+        "Contribution guidelines",
+        "",
+        "documentation",
+        "check_contribution_guide",
+        "low",
+        "medium",
+    ),
     RSQKitTask("code_of_conduct", "Code of conduct", "", "documentation", "check_code_of_conduct", "low", "low"),
     RSQKitTask("issue_templates", "Issue templates", "", "documentation", "check_issue_templates", "low", "low"),
-
     # --- Security ---
-    RSQKitTask("security", "Research software security", f"{RSQKIT_BASE}/research_software_security", "security", "check_security", "medium", "critical"),
-    RSQKitTask("secret_management", "Secret management", f"{RSQKIT_BASE}/research_software_security", "security", "check_secret_management", "low", "critical"),
-
+    RSQKitTask(
+        "security",
+        "Research software security",
+        f"{RSQKIT_BASE}/research_software_security",
+        "security",
+        "check_security",
+        "medium",
+        "critical",
+    ),
+    RSQKitTask(
+        "secret_management",
+        "Secret management",
+        f"{RSQKIT_BASE}/research_software_security",
+        "security",
+        "check_secret_management",
+        "low",
+        "critical",
+    ),
     # --- Reproducibility ---
-    RSQKitTask("reproducible_envs", "Reproducible software environments", f"{RSQKIT_BASE}/reproducible_software_environments", "engineering", "check_reproducible_envs", "medium", "high"),
-    RSQKitTask("data_management", "Data management plan", f"{RSQKIT_BASE}/software_management_planning", "reproducibility", "check_data_management", "low", "medium"),
-    RSQKitTask("reproducibility_checklist", "Reproducibility checklist", f"{RSQKIT_BASE}/reproducible_software_environments", "reproducibility", "check_reproducibility_checklist", "low", "medium"),
-
+    RSQKitTask(
+        "reproducible_envs",
+        "Reproducible software environments",
+        f"{RSQKIT_BASE}/reproducible_software_environments",
+        "engineering",
+        "check_reproducible_envs",
+        "medium",
+        "high",
+    ),
+    RSQKitTask(
+        "data_management",
+        "Data management plan",
+        f"{RSQKIT_BASE}/software_management_planning",
+        "reproducibility",
+        "check_data_management",
+        "low",
+        "medium",
+    ),
+    RSQKitTask(
+        "reproducibility_checklist",
+        "Reproducibility checklist",
+        f"{RSQKIT_BASE}/reproducible_software_environments",
+        "reproducibility",
+        "check_reproducibility_checklist",
+        "low",
+        "medium",
+    ),
     # --- Sustainability ---
-    RSQKitTask("archiving", "Archiving software", f"{RSQKIT_BASE}/archiving_software", "sustainability", "check_archiving", "medium", "medium"),
-    RSQKitTask("future_proofing", "Future proofing", f"{RSQKIT_BASE}/future_proofing", "sustainability", "check_future_proofing", "medium", "medium"),
-    RSQKitTask("sustainability_plan", "Software sustainability plan", f"{RSQKIT_BASE}/software_maintenance", "sustainability", "check_sustainability_plan", "low", "low"),
-    RSQKitTask("env_sustainability", "Environmental sustainability", f"{RSQKIT_BASE}/improving_environmental_sustainability", "sustainability", "check_env_sustainability", "medium", "low"),
-
+    RSQKitTask(
+        "archiving",
+        "Archiving software",
+        f"{RSQKIT_BASE}/archiving_software",
+        "sustainability",
+        "check_archiving",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "future_proofing",
+        "Future proofing",
+        f"{RSQKIT_BASE}/future_proofing",
+        "sustainability",
+        "check_future_proofing",
+        "medium",
+        "medium",
+    ),
+    RSQKitTask(
+        "sustainability_plan",
+        "Software sustainability plan",
+        f"{RSQKIT_BASE}/software_maintenance",
+        "sustainability",
+        "check_sustainability_plan",
+        "low",
+        "low",
+    ),
+    RSQKitTask(
+        "env_sustainability",
+        "Environmental sustainability",
+        f"{RSQKIT_BASE}/improving_environmental_sustainability",
+        "sustainability",
+        "check_env_sustainability",
+        "medium",
+        "low",
+    ),
     # --- Quality & review ---
-    RSQKitTask("software_peereview", "Software peer review", f"{RSQKIT_BASE}/publishing_software", "quality", "check_software_peer_review", "high", "medium"),
-    RSQKitTask("quality_model", "Software quality models", f"{RSQKIT_BASE}/fair_rs", "quality", "check_quality_model", "medium", "low"),
+    RSQKitTask(
+        "software_peereview",
+        "Software peer review",
+        f"{RSQKIT_BASE}/publishing_software",
+        "quality",
+        "check_software_peer_review",
+        "high",
+        "medium",
+    ),
+    RSQKitTask(
+        "quality_model",
+        "Software quality models",
+        f"{RSQKIT_BASE}/fair_rs",
+        "quality",
+        "check_quality_model",
+        "medium",
+        "low",
+    ),
 ]
 
 
-def get_task(task_id: str) -> Optional[RSQKitTask]:
+def get_task(task_id: str) -> RSQKitTask | None:
     for t in TASKS:
         if t.id == task_id:
             return t

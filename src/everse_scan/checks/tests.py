@@ -9,8 +9,16 @@ from everse_scan.models import CheckResult, CheckStatus
 
 
 def _find_test_files(path: Path) -> list[str]:
-    test_patterns = ["test_*.py", "*_test.py", "test-*.R", "*.test.js", "*.spec.js",
-                     "test_*.cpp", "*.test.ts", "*.spec.ts"]
+    test_patterns = [
+        "test_*.py",
+        "*_test.py",
+        "test-*.R",
+        "*.test.js",
+        "*.spec.js",
+        "test_*.cpp",
+        "*.test.ts",
+        "*.spec.ts",
+    ]
     results: list[str] = []
     ignore_dirs = {".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build"}
     for root, dirs, files in os.walk(path):
@@ -102,8 +110,13 @@ def check_tests(repo_path: str, language: str | None = None) -> CheckResult:
 
     recs = []
     if not test_files:
-        fw_rec = {"Python": "pytest", "JavaScript/TypeScript": "jest",
-                  "R": "testthat", "Julia": "Test.jl", "C/C++": "Google Test / CTest"}
+        fw_rec = {
+            "Python": "pytest",
+            "JavaScript/TypeScript": "jest",
+            "R": "testthat",
+            "Julia": "Test.jl",
+            "C/C++": "Google Test / CTest",
+        }
         rec_fw = fw_rec.get(language or "", "a testing framework")
         recs.append(f"Create a tests/ directory with {rec_fw}")
     elif not framework:

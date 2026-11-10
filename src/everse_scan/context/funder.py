@@ -13,16 +13,15 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
 class FunderResult:
-    funder: str                # "horizon_europe", "nsf", "wellcome", "unknown", ""
-    funder_label: str          # "Horizon Europe", "NSF", "Wellcome", ""
+    funder: str  # "horizon_europe", "nsf", "wellcome", "unknown", ""
+    funder_label: str  # "Horizon Europe", "NSF", "Wellcome", ""
     grant_ids: list[str] = field(default_factory=list)
     detection_sources: list[str] = field(default_factory=list)
-    confidence: str = "low"    # "high", "medium", "low"
+    confidence: str = "low"  # "high", "medium", "low"
 
     @property
     def detected(self) -> bool:
@@ -39,8 +38,8 @@ FUNDER_PATTERNS = {
             r"horizon\s*2020",
             r"european\s*union.*fund",
             r"eu\s*grant",
-            r"101\d{6}",           # Horizon Europe grant numbers
-            r"95\d{6}",            # H2020 grant numbers
+            r"101\d{6}",  # Horizon Europe grant numbers
+            r"95\d{6}",  # H2020 grant numbers
         ],
         "grant_pattern": r"(?:101|95)\d{6}",
     },
@@ -200,9 +199,9 @@ def detect_funder(repo_path: str) -> FunderResult:
                 best_funder = funder_id
                 best_label = info["label"]
                 # Determine confidence
-                if any(src.startswith(".zenodo.json") for src in sources):
-                    best_confidence = "high"
-                elif any("CITATION.cff" in src for src in sources):
+                if any(src.startswith(".zenodo.json") for src in sources) or any(
+                    "CITATION.cff" in src for src in sources
+                ):
                     best_confidence = "high"
                 elif any("README.md" in src for src in sources):
                     best_confidence = "medium"

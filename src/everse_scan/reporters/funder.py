@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
-from everse_scan.models import CheckResult, CheckStatus, ScanResult
 from everse_scan.context.funder import FunderResult
-from everse_scan.knowledge.funders import FunderProfile, get_funder_profile
+from everse_scan.knowledge.funders import get_funder_profile
+from everse_scan.models import CheckStatus, ScanResult
 
 
 def generate_funder_section(result: ScanResult, funder: FunderResult) -> str:
@@ -83,10 +81,13 @@ def generate_funder_section(result: ScanResult, funder: FunderResult) -> str:
 
     # Missing mandatory requirements
     mandatory_missing = [
-        req.description for req in profile.requirements
+        req.description
+        for req in profile.requirements
         if req.mandatory
-        and (checks_by_name.get(req.related_check) and
-             checks_by_name[req.related_check].status in (CheckStatus.FAIL, CheckStatus.WARN))
+        and (
+            checks_by_name.get(req.related_check)
+            and checks_by_name[req.related_check].status in (CheckStatus.FAIL, CheckStatus.WARN)
+        )
     ]
     if mandatory_missing:
         lines.append("### Missing mandatory requirements")

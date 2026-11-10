@@ -7,15 +7,14 @@ import sys
 from pathlib import Path
 
 from everse_scan import __version__
-from everse_scan.scanner import scan_repo
-from everse_scan.reporters.json import generate_json
-from everse_scan.reporters.markdown import generate_markdown
-from everse_scan.reporters.adaptive import generate_adaptive_markdown, ROLES
+from everse_scan.reporters.adaptive import ROLES, generate_adaptive_markdown
 from everse_scan.reporters.diff import (
-    load_baseline,
     generate_diff_markdown,
+    load_baseline,
     save_baseline,
 )
+from everse_scan.reporters.json import generate_json
+from everse_scan.scanner import scan_repo
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -34,7 +33,8 @@ def main(argv: list[str] | None = None) -> int:
         help="Output format (default: markdown)",
     )
     parser.add_argument(
-        "--output", "-o",
+        "--output",
+        "-o",
         help="Output file path (default: stdout for json, everse-scan-report.md for markdown)",
     )
     parser.add_argument(
@@ -75,6 +75,7 @@ def main(argv: list[str] | None = None) -> int:
     if repo_path.startswith("https://github.com/") or repo_path.startswith("git@github.com:"):
         import subprocess
         import tempfile
+
         repo_name = repo_path.rstrip("/").split("/")[-1].replace(".git", "")
         tmp_dir = tempfile.mkdtemp(prefix="everse-scan-")
         clone_path = str(Path(tmp_dir) / repo_name)
@@ -88,6 +89,7 @@ def main(argv: list[str] | None = None) -> int:
             result = scan_repo(clone_path, use_integrations=args.use is not None)
         finally:
             import shutil
+
             shutil.rmtree(tmp_dir, ignore_errors=True)
     else:
         if not Path(repo_path).exists():
@@ -138,8 +140,10 @@ def main(argv: list[str] | None = None) -> int:
         output_path = args.output or "everse-scan-report.md"
         Path(output_path).write_text(output)
         print(f"Report saved to {output_path}", file=sys.stderr)
-        print(f"\nSummary: {result.passed}/{result.total} passed, "
-              f"{result.warned} warned, {result.failed} failed", file=sys.stderr)
+        print(
+            f"\nSummary: {result.passed}/{result.total} passed, {result.warned} warned, {result.failed} failed",
+            file=sys.stderr,
+        )
     elif args.format == "both":
         json_output = generate_json(result)
         md_output = generate_adaptive_markdown(result, args.role)
@@ -149,8 +153,10 @@ def main(argv: list[str] | None = None) -> int:
         Path(md_path).write_text(md_output)
         print(f"JSON report saved to {json_path}", file=sys.stderr)
         print(f"Markdown report saved to {md_path}", file=sys.stderr)
-        print(f"\nSummary: {result.passed}/{result.total} passed, "
-              f"{result.warned} warned, {result.failed} failed", file=sys.stderr)
+        print(
+            f"\nSummary: {result.passed}/{result.total} passed, {result.warned} warned, {result.failed} failed",
+            file=sys.stderr,
+        )
 
     return 0
 

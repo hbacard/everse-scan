@@ -1,6 +1,5 @@
 """Test fixtures: sample repo structures."""
 
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -29,14 +28,14 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
         "MIT License\n\n"
         "Copyright (c) 2024 Test User\n\n"
         "Permission is hereby granted, free of charge, to any person obtaining a copy "
-        "of this software and associated documentation files (the \"Software\"), to deal "
+        'of this software and associated documentation files (the "Software"), to deal '
         "in the Software without restriction, including without limitation the rights "
         "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell "
         "copies of the Software, and to permit persons to whom the Software is "
         "furnished to do so, subject to the following conditions:\n\n"
         "The above copyright notice and this permission notice shall be included in all "
         "copies or substantial portions of the Software.\n\n"
-        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND."
+        'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.'
     )
 
     # CITATION.cff
@@ -62,7 +61,7 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
         'description = "A sample project"\n'
         'license = {text = "MIT"}\n\n'
         "[tool.ruff]\n"
-        'line-length = 88\n\n'
+        "line-length = 88\n\n"
         "[tool.pytest.ini_options]\n"
         'testpaths = ["tests"]\n'
     )
@@ -72,10 +71,7 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
     src_pkg.mkdir(parents=True, exist_ok=True)
     (src_pkg / "__init__.py").write_text('"""Sample package."""\n__version__ = "0.1.0"\n')
     (src_pkg / "main.py").write_text(
-        '"""Main module."""\n\n\n'
-        'def hello():\n'
-        '    """Return greeting."""\n'
-        '    return "Hello, World!"\n'
+        '"""Main module."""\n\n\ndef hello():\n    """Return greeting."""\n    return "Hello, World!"\n'
     )
 
     # tests
@@ -84,8 +80,8 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
     (tests_dir / "__init__.py").write_text("")
     (tests_dir / "test_main.py").write_text(
         '"""Tests for main module."""\n'
-        'from sample.main import hello\n\n\n'
-        'def test_hello():\n'
+        "from sample.main import hello\n\n\n"
+        "def test_hello():\n"
         '    """Test hello function."""\n'
         '    assert hello() == "Hello, World!"\n'
     )
@@ -97,9 +93,7 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
     (docs_dir / "guide.md").write_text("# Guide\n\nUsage guide.\n")
 
     # .gitignore
-    (repo / ".gitignore").write_text(
-        "__pycache__/\n*.pyc\n.venv/\nvenv/\nnode_modules/\ndist/\nbuild/\n.env\n"
-    )
+    (repo / ".gitignore").write_text("__pycache__/\n*.pyc\n.venv/\nvenv/\nnode_modules/\ndist/\nbuild/\n.env\n")
 
     # CI
     workflows = repo / ".github" / "workflows"

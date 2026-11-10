@@ -9,7 +9,6 @@ from pathlib import Path
 
 from everse_scan.models import CheckResult, CheckStatus
 
-
 REQUIRED_CFF_FIELDS = ["cff-version", "title", "authors", "message"]
 RECOMMENDED_CFF_FIELDS = ["version", "date-released", "license", "doi", "url"]
 
@@ -33,9 +32,12 @@ def check_cffconvert(repo_path: str) -> CheckResult:
     # Try cffconvert CLI
     try:
         import subprocess
+
         result = subprocess.run(
             ["cffconvert", "--validate", "-i", str(cff_path)],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
         if result.returncode == 0:
             return CheckResult(
@@ -80,8 +82,12 @@ def _heuristic_validate(cff_path: Path) -> CheckResult:
     missing_recommended = [f for f in RECOMMENDED_CFF_FIELDS if not found_fields.get(f)]
 
     details: list[str] = []
-    details.append(f"Required fields present: {sum(1 for f in REQUIRED_CFF_FIELDS if found_fields.get(f))}/{len(REQUIRED_CFF_FIELDS)}")
-    details.append(f"Recommended fields present: {sum(1 for f in RECOMMENDED_CFF_FIELDS if found_fields.get(f))}/{len(RECOMMENDED_CFF_FIELDS)}")
+    details.append(
+        f"Required fields present: {sum(1 for f in REQUIRED_CFF_FIELDS if found_fields.get(f))}/{len(REQUIRED_CFF_FIELDS)}"
+    )
+    details.append(
+        f"Recommended fields present: {sum(1 for f in RECOMMENDED_CFF_FIELDS if found_fields.get(f))}/{len(RECOMMENDED_CFF_FIELDS)}"
+    )
     if missing_required:
         details.append(f"Missing required: {', '.join(missing_required)}")
     if missing_recommended:

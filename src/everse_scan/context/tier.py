@@ -12,8 +12,13 @@ TIER_TOOL = "tool"
 TIER_INFRA = "infrastructure"
 
 PACKAGING_FILES = {
-    "pyproject.toml", "setup.py", "package.json", "Cargo.toml",
-    "DESCRIPTION", "Project.toml", "CMakeLists.txt",
+    "pyproject.toml",
+    "setup.py",
+    "package.json",
+    "Cargo.toml",
+    "DESCRIPTION",
+    "Project.toml",
+    "CMakeLists.txt",
 }
 
 CI_PATHS = [
@@ -46,10 +51,37 @@ class TierResult:
 
 
 def _count_source_files(path: Path) -> int:
-    source_exts = {".py", ".js", ".ts", ".jsx", ".tsx", ".R", ".r", ".jl",
-                   ".c", ".cpp", ".cc", ".h", ".hpp", ".rs", ".go", ".java", ".rb"}
-    ignore_dirs = {".git", ".venv", "venv", "node_modules", "__pycache__",
-                   "dist", "build", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
+    source_exts = {
+        ".py",
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".R",
+        ".r",
+        ".jl",
+        ".c",
+        ".cpp",
+        ".cc",
+        ".h",
+        ".hpp",
+        ".rs",
+        ".go",
+        ".java",
+        ".rb",
+    }
+    ignore_dirs = {
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        "__pycache__",
+        "dist",
+        "build",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache",
+    }
     count = 0
     for root, dirs, files in os.walk(path):
         if any(p in ignore_dirs for p in Path(root).parts):
@@ -139,13 +171,15 @@ def detect_tier(repo_path: str) -> TierResult:
     has_docs = _has_extensive_docs(path)
 
     # Tier 3: Infrastructure
-    infra_signals = sum([
-        has_ci and has_docker,
-        has_docs and has_ci,
-        author_count > 5,
-        release_count > 3,
-        has_packaging and has_ci and has_docker,
-    ])
+    infra_signals = sum(
+        [
+            has_ci and has_docker,
+            has_docs and has_ci,
+            author_count > 5,
+            release_count > 3,
+            has_packaging and has_ci and has_docker,
+        ]
+    )
     if infra_signals >= 3:
         return TierResult(
             tier=TIER_INFRA,
@@ -158,19 +192,20 @@ def detect_tier(repo_path: str) -> TierResult:
         )
 
     # Tier 1: Script
-    script_signals = sum([
-        source_count < 10,
-        not has_packaging,
-        not has_tests,
-        author_count <= 1,
-        release_count == 0,
-    ])
+    script_signals = sum(
+        [
+            source_count < 10,
+            not has_packaging,
+            not has_tests,
+            author_count <= 1,
+            release_count == 0,
+        ]
+    )
     if script_signals >= 4:
         return TierResult(
             tier=TIER_SCRIPT,
             justification=(
-                f"< 10 source files ({source_count}), no packaging, "
-                f"no tests, {author_count} author(s), no releases"
+                f"< 10 source files ({source_count}), no packaging, no tests, {author_count} author(s), no releases"
             ),
             checks_adjusted=["codemeta.json", "CI/CD", "packaging", "containers"],
         )

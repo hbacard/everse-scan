@@ -5,10 +5,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
-from everse_scan.models import CheckResult, CheckStatus, ScanResult
-from everse_scan.reporters.markdown import STATUS_ICONS, _tier_label, _lifecycle_label
+from everse_scan.models import CheckStatus, ScanResult
+from everse_scan.reporters.markdown import STATUS_ICONS
 
 
 @dataclass
@@ -17,7 +16,7 @@ class DiffResult:
     current_passed: int
     baseline_total: int
     current_total: int
-    improvements: list[tuple[str, CheckStatus, CheckStatus]]   # name, old_status, new_status
+    improvements: list[tuple[str, CheckStatus, CheckStatus]]  # name, old_status, new_status
     regressions: list[tuple[str, CheckStatus, CheckStatus]]
     unchanged_failures: list[str]
     newly_na: list[str]
@@ -115,15 +114,21 @@ def generate_diff_markdown(baseline: dict, current: ScanResult) -> str:
     lines.append("")
     arrow = "up" if diff.delta > 0 else ("down" if diff.delta < 0 else "same")
     if diff.delta > 0:
-        lines.append(f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})")
+        lines.append(
+            f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})"
+        )
         lines.append("")
         lines.append(f"**+{diff.delta} improvement(s)**")
     elif diff.delta < 0:
-        lines.append(f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})")
+        lines.append(
+            f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})"
+        )
         lines.append("")
         lines.append(f"**{diff.delta} regression(s)**")
     else:
-        lines.append(f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})")
+        lines.append(
+            f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})"
+        )
         lines.append("")
         lines.append("**No score change** (but individual checks may have improved/regressed)")
     lines.append("")
@@ -162,10 +167,17 @@ def generate_diff_markdown(baseline: dict, current: ScanResult) -> str:
     # Next steps
     lines.append("## Recommended next steps")
     lines.append("")
-    from everse_scan.priorities import prioritize_checks, priority_label, EFFORT_LABELS, IMPACT_LABELS, QUICK_WIN, CRITICAL_FIX
+    from everse_scan.priorities import (
+        EFFORT_LABELS,
+        IMPACT_LABELS,
+        prioritize_checks,
+        priority_label,
+    )
+
     prioritized = prioritize_checks(
         [c for c in current.checks if c.name in diff.unchanged_failures],
-        current.tier, current.lifecycle,
+        current.tier,
+        current.lifecycle,
     )
     if prioritized:
         for c, q, p in prioritized[:5]:

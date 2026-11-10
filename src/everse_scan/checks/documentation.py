@@ -72,7 +72,14 @@ def check_documentation(repo_path: str, language: str | None = None) -> CheckRes
         f"README: {'present' if has_readme else 'missing'} ({readme_quality} chars)",
     ]
 
-    score = sum([has_docs_dir and docs_file_count > 0, bool(doc_sites), docstring_count > 5, has_readme and readme_quality > 200])
+    score = sum(
+        [
+            has_docs_dir and docs_file_count > 0,
+            bool(doc_sites),
+            docstring_count > 5,
+            has_readme and readme_quality > 200,
+        ]
+    )
 
     if score >= 3:
         status = CheckStatus.PASS
@@ -88,8 +95,9 @@ def check_documentation(repo_path: str, language: str | None = None) -> CheckRes
     if not has_docs_dir:
         recs.append("Create a docs/ directory for documentation")
     if not doc_sites:
-        tool_rec = {"Python": "Sphinx or MkDocs", "R": "pkgdown",
-                    "JavaScript/TypeScript": "Docusaurus"}.get(language or "", "a documentation generator")
+        tool_rec = {"Python": "Sphinx or MkDocs", "R": "pkgdown", "JavaScript/TypeScript": "Docusaurus"}.get(
+            language or "", "a documentation generator"
+        )
         recs.append(f"Set up {tool_rec} for documentation generation")
     if docstring_count < 5:
         recs.append("Add docstrings to public functions/classes")

@@ -9,13 +9,11 @@ from everse_scan.models import CheckResult, CheckStatus
 REQUIRED_FIELDS = ["title", "authors", "date-released", "version"]
 
 
-def _parse_cff_fields(content: str) -> dict[str, str]:
-    fields: dict[str, str] = {}
-    for line in content.splitlines():
-        stripped = line.strip()
-        if ":" in stripped and not stripped.startswith("#"):
-            key, _, value = stripped.partition(":")
-            fields[key.strip()] = value.strip().strip("'\"")
+def _parse_cff_fields(cff_file: Path) -> dict[str, str]:
+    import yaml
+
+    with open(cff_file, "r") as f_in:
+        fields = yaml.safe_load(f_in)
     return fields
 
 
@@ -37,11 +35,10 @@ def check_citation(repo_path: str) -> CheckResult:
             category="fair",
         )
 
-    content = cff_file.read_text(errors="ignore")
-    fields = _parse_cff_fields(content)
+    fields = _parse_cff_fields(cff_file=cff_file)
 
     missing = [f for f in REQUIRED_FIELDS if f not in fields or not fields[f]]
-    present = [f for f in REQUIRED_FIELDS if f in fields and fields[f]]
+    present = [f for f in REQUIRED_FIELDS if fields.get(f)]
 
     details = [f"Found fields: {', '.join(present)}"] if present else ["No required fields found"]
     if missing:

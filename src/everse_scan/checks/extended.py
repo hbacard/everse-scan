@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
@@ -212,8 +211,10 @@ def check_api_docs(repo_path: str) -> CheckResult:
     details: list[str] = []
 
     api_files = [
-        "openapi.yaml", "openapi.json",
-        "swagger.yaml", "swagger.json",
+        "openapi.yaml",
+        "openapi.json",
+        "swagger.yaml",
+        "swagger.json",
         "openapi.yml",
     ]
     for f in api_files:
@@ -257,7 +258,9 @@ def check_changelog(repo_path: str) -> CheckResult:
     for f in changelog_files:
         if (path / f).exists():
             content = (path / f).read_text(errors="ignore")
-            has_entries = len([l for l in content.splitlines() if l.strip().startswith("##") or l.strip().startswith("-")]) > 0
+            has_entries = (
+                len([l for l in content.splitlines() if l.strip().startswith("##") or l.strip().startswith("-")]) > 0
+            )
             return CheckResult(
                 name="Changelog",
                 status=CheckStatus.PASS if has_entries else CheckStatus.WARN,
@@ -331,7 +334,9 @@ def check_issue_templates(repo_path: str) -> CheckResult:
     path = Path(repo_path)
     template_dir = path / ".github" / "ISSUE_TEMPLATE"
     if template_dir.is_dir():
-        templates = list(template_dir.glob("*.md")) + list(template_dir.glob("*.yml")) + list(template_dir.glob("*.yaml"))
+        templates = (
+            list(template_dir.glob("*.md")) + list(template_dir.glob("*.yml")) + list(template_dir.glob("*.yaml"))
+        )
         if templates:
             return CheckResult(
                 name="Issue templates",
@@ -408,7 +413,13 @@ def check_secret_management(repo_path: str) -> CheckResult:
 def check_data_management(repo_path: str) -> CheckResult:
     """Check for data management plan or data documentation."""
     path = Path(repo_path)
-    dmp_files = ["DATA_MANAGEMENT_PLAN.md", "DMP.md", "data_management.md", "docs/dmp.md", "docs/DATA_MANAGEMENT_PLAN.md"]
+    dmp_files = [
+        "DATA_MANAGEMENT_PLAN.md",
+        "DMP.md",
+        "data_management.md",
+        "docs/dmp.md",
+        "docs/DATA_MANAGEMENT_PLAN.md",
+    ]
 
     for f in dmp_files:
         if (path / f).exists():
@@ -449,8 +460,10 @@ def check_reproducibility_checklist(repo_path: str) -> CheckResult:
     """Check for reproducibility checklist or checklist file."""
     path = Path(repo_path)
     checklist_files = [
-        "REPRODUCIBILITY.md", "reproducibility.md",
-        "CHECKLIST.md", "checklist.md",
+        "REPRODUCIBILITY.md",
+        "reproducibility.md",
+        "CHECKLIST.md",
+        "checklist.md",
         "docs/reproducibility.md",
     ]
 
@@ -523,7 +536,16 @@ def check_future_proofing(repo_path: str) -> CheckResult:
     details: list[str] = []
     score = 0
 
-    lockfiles = ["uv.lock", "poetry.lock", "package-lock.json", "yarn.lock", "Cargo.lock", "Gemfile.lock", "go.sum", "renv.lock"]
+    lockfiles = [
+        "uv.lock",
+        "poetry.lock",
+        "package-lock.json",
+        "yarn.lock",
+        "Cargo.lock",
+        "Gemfile.lock",
+        "go.sum",
+        "renv.lock",
+    ]
     found_locks = [f for f in lockfiles if (path / f).exists()]
     if found_locks:
         score += 1
@@ -573,8 +595,10 @@ def check_sustainability_plan(repo_path: str) -> CheckResult:
     """Check for software sustainability plan."""
     path = Path(repo_path)
     plan_files = [
-        "SUSTAINABILITY.md", "sustainability_plan.md",
-        "docs/sustainability.md", "SUSTAINABILITY_PLAN.md",
+        "SUSTAINABILITY.md",
+        "sustainability_plan.md",
+        "docs/sustainability.md",
+        "SUSTAINABILITY_PLAN.md",
     ]
 
     for f in plan_files:
@@ -689,8 +713,10 @@ def check_quality_model(repo_path: str) -> CheckResult:
     """Check for software quality model adoption (ISO 25010, SQOCE, etc.)."""
     path = Path(repo_path)
     quality_files = [
-        "QUALITY.md", "quality_model.md",
-        "docs/quality.md", ".github/quality.yml",
+        "QUALITY.md",
+        "quality_model.md",
+        "docs/quality.md",
+        ".github/quality.yml",
     ]
 
     for f in quality_files:

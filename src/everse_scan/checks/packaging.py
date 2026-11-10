@@ -9,8 +9,13 @@ from everse_scan.models import CheckResult, CheckStatus
 
 
 def _check_pyproject(path: Path) -> dict[str, object]:
-    info: dict[str, object] = {"has_build_system": False, "has_name": False,
-                               "has_version": False, "has_scripts": False, "deps": 0}
+    info: dict[str, object] = {
+        "has_build_system": False,
+        "has_name": False,
+        "has_version": False,
+        "has_scripts": False,
+        "deps": 0,
+    }
     pp = path / "pyproject.toml"
     if pp.exists():
         content = pp.read_text(errors="ignore")
@@ -49,11 +54,12 @@ def check_packaging(repo_path: str, language: str | None = None) -> CheckResult:
         pp_info = _check_pyproject(path)
         if (path / "pyproject.toml").exists():
             packaging_found.append("pyproject.toml")
-            score += sum([pp_info["has_build_system"], pp_info["has_name"],
-                         pp_info["has_version"]])
-            details.append(f"pyproject.toml: build-system={pp_info['has_build_system']}, "
-                          f"name={pp_info['has_name']}, version={pp_info['has_version']}, "
-                          f"scripts={pp_info['has_scripts']}")
+            score += sum([pp_info["has_build_system"], pp_info["has_name"], pp_info["has_version"]])
+            details.append(
+                f"pyproject.toml: build-system={pp_info['has_build_system']}, "
+                f"name={pp_info['has_name']}, version={pp_info['has_version']}, "
+                f"scripts={pp_info['has_scripts']}"
+            )
         if (path / "setup.py").exists():
             packaging_found.append("setup.py")
             score += 1
@@ -68,8 +74,10 @@ def check_packaging(repo_path: str, language: str | None = None) -> CheckResult:
         if (path / "package.json").exists():
             packaging_found.append("package.json")
             score += sum([pj_info["has_name"], pj_info["has_version"], pj_info["has_main"]])
-            details.append(f"package.json: name={pj_info['has_name']}, "
-                          f"version={pj_info['has_version']}, main={pj_info['has_main']}")
+            details.append(
+                f"package.json: name={pj_info['has_name']}, "
+                f"version={pj_info['has_version']}, main={pj_info['has_main']}"
+            )
 
     if language in ("R", None):
         if (path / "DESCRIPTION").exists():

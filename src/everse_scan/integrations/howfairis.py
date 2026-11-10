@@ -6,12 +6,9 @@ deterministic checks based on repository content.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Optional
 
 from everse_scan.models import CheckResult, CheckStatus
-
 
 FAIR_PRINCIPLES = [
     ("repository", "Repository is publicly accessible (version control)"),
@@ -54,14 +51,16 @@ def _check_with_howfairis(repo_path: str) -> list[CheckResult]:
     for i, (name, desc) in enumerate(zip(principle_names, FAIR_PRINCIPLES)):
         passed = compliance[i] if i < len(compliance) else False
         status = CheckStatus.PASS if passed else CheckStatus.WARN
-        results.append(CheckResult(
-            name=f"FAIR: {name}",
-            status=status,
-            message=f"{'Pass' if passed else 'Not met'}: {desc[1]}",
-            details=[f"howfairis principle: {name}"],
-            rsqkit_url="https://fair-software.eu/",
-            category="fair",
-        ))
+        results.append(
+            CheckResult(
+                name=f"FAIR: {name}",
+                status=status,
+                message=f"{'Pass' if passed else 'Not met'}: {desc[1]}",
+                details=[f"howfairis principle: {name}"],
+                rsqkit_url="https://fair-software.eu/",
+                category="fair",
+            )
+        )
 
     return results
 
@@ -98,7 +97,15 @@ def _check_principle(path: Path, principle_id: str, description: str) -> CheckRe
 
     if principle_id == "registry":
         # Check if the package is registered (heuristic: packaging file present)
-        registry_files = ["pyproject.toml", "setup.py", "package.json", "DESCRIPTION", "Gemfile", "Cargo.toml", "go.mod"]
+        registry_files = [
+            "pyproject.toml",
+            "setup.py",
+            "package.json",
+            "DESCRIPTION",
+            "Gemfile",
+            "Cargo.toml",
+            "go.mod",
+        ]
         found = [f for f in registry_files if (path / f).exists()]
         return CheckResult(
             name="FAIR: registry",

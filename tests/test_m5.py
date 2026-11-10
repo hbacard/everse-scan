@@ -1,30 +1,45 @@
 """Tests for M5: FAIR integrations, extended checks, knowledge base."""
 
 import json
-from pathlib import Path
 
 import pytest
 
-from everse_scan.scanner import scan_repo
-from everse_scan.knowledge.rsqkit import (
-    TASKS, get_task, get_covered_tasks, get_uncovered_tasks,
-    tasks_by_category, get_tools, TOOLS_BY_LANGUAGE,
+from everse_scan.checks.extended import (
+    check_api_docs,
+    check_archiving,
+    check_authorship,
+    check_changelog,
+    check_code_of_conduct,
+    check_containers,
+    check_contribution_guide,
+    check_data_management,
+    check_dependency_management,
+    check_env_sustainability,
+    check_future_proofing,
+    check_issue_templates,
+    check_orcid,
+    check_quality_model,
+    check_reproducibility_checklist,
+    check_secret_management,
+    check_software_peer_review,
+    check_sustainability_plan,
+    check_workflow_files,
 )
-from everse_scan.integrations.howfairis import check_howfairis
 from everse_scan.integrations.cffconvert import check_cffconvert
 from everse_scan.integrations.codemeta import check_codemeta_validation
-from everse_scan.checks.extended import (
-    check_authorship, check_orcid, check_dependency_management,
-    check_containers, check_workflow_files, check_api_docs,
-    check_changelog, check_contribution_guide, check_code_of_conduct,
-    check_issue_templates, check_secret_management, check_data_management,
-    check_reproducibility_checklist, check_archiving, check_future_proofing,
-    check_sustainability_plan, check_env_sustainability,
-    check_software_peer_review, check_quality_model,
+from everse_scan.integrations.howfairis import check_howfairis
+from everse_scan.knowledge.rsqkit import (
+    TASKS,
+    TOOLS_BY_LANGUAGE,
+    get_covered_tasks,
+    get_task,
+    get_tools,
+    get_uncovered_tasks,
+    tasks_by_category,
 )
 from everse_scan.models import CheckStatus
-
-from tests.fixtures import create_sample_repo, create_minimal_repo
+from everse_scan.scanner import scan_repo
+from tests.fixtures import create_minimal_repo, create_sample_repo
 
 
 @pytest.fixture
@@ -208,19 +223,23 @@ class TestCodemetaIntegration:
     def test_valid_codemeta(self, tmp_path):
         repo = tmp_path / "cm-repo"
         repo.mkdir()
-        (repo / "codemeta.json").write_text(json.dumps({
-            "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-            "@type": "SoftwareSourceCode",
-            "name": "Test",
-            "author": [{"@type": "Person", "name": "Test"}],
-            "license": "MIT",
-            "version": "1.0.0",
-            "url": "https://example.com",
-            "identifier": "https://doi.org/10.0001/test",
-            "description": "Test software",
-            "codeRepository": "https://github.com/test/test",
-            "dateCreated": "2024-01-01",
-        }))
+        (repo / "codemeta.json").write_text(
+            json.dumps(
+                {
+                    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+                    "@type": "SoftwareSourceCode",
+                    "name": "Test",
+                    "author": [{"@type": "Person", "name": "Test"}],
+                    "license": "MIT",
+                    "version": "1.0.0",
+                    "url": "https://example.com",
+                    "identifier": "https://doi.org/10.0001/test",
+                    "description": "Test software",
+                    "codeRepository": "https://github.com/test/test",
+                    "dateCreated": "2024-01-01",
+                }
+            )
+        )
         result = check_codemeta_validation(str(repo))
         assert result.status == CheckStatus.PASS
 

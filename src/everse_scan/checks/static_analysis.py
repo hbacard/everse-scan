@@ -84,7 +84,11 @@ def check_static_analysis(repo_path: str, language: str | None = None) -> CheckR
         msg = f"Static analysis tools configured ({', '.join(found_tools)})"
     else:
         status = CheckStatus.WARN
-        msg = f"Partial static analysis config ({', '.join(foundtools)})" if False else f"Partial static analysis config ({', '.join(found_tools)})"
+        msg = (
+            f"Partial static analysis config ({', '.join(foundtools)})"
+            if False
+            else f"Partial static analysis config ({', '.join(found_tools)})"
+        )
 
     recs = []
     if not has_formatter:
