@@ -22,13 +22,14 @@ def _git_commit_count(path: Path) -> int:
     try:
         result = subprocess.run(
             ["git", "rev-list", "--count", "HEAD"],
+            check=False,
             cwd=str(path),
             capture_output=True,
             text=True,
             timeout=10,
         )
         return int(result.stdout.strip()) if result.stdout.strip().isdigit() else 0
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return 0
 
 
@@ -36,13 +37,14 @@ def _git_recent_commits(path: Path, months: int = 3) -> int:
     try:
         result = subprocess.run(
             ["git", "log", f"--since={months} months ago", "--oneline"],
+            check=False,
             cwd=str(path),
             capture_output=True,
             text=True,
             timeout=10,
         )
         return len([l for l in result.stdout.splitlines() if l.strip()])
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return 0
 
 
@@ -50,13 +52,14 @@ def _git_tag_count(path: Path) -> int:
     try:
         result = subprocess.run(
             ["git", "tag"],
+            check=False,
             cwd=str(path),
             capture_output=True,
             text=True,
             timeout=10,
         )
         return len([t for t in result.stdout.splitlines() if t.strip()])
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return 0
 
 
@@ -69,7 +72,7 @@ def _has_doi(path: Path) -> bool:
             content = readme.read_text(errors="ignore").lower()
             if "doi.org" in content or "zenodo" in content:
                 return True
-        except Exception:
+        except (OSError, FileNotFoundError, UnicodeDecodeError):
             pass
     return False
 

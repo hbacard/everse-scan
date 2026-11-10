@@ -113,6 +113,7 @@ def _count_git_authors(path: Path) -> int:
     try:
         result = subprocess.run(
             ["git", "log", "--format=%aN"],
+            check=False,
             cwd=str(path),
             capture_output=True,
             text=True,
@@ -120,7 +121,7 @@ def _count_git_authors(path: Path) -> int:
         )
         authors = {line.strip() for line in result.stdout.splitlines() if line.strip()}
         return len(authors)
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return 0
 
 
@@ -128,13 +129,14 @@ def _has_releases(path: Path) -> int:
     try:
         result = subprocess.run(
             ["git", "tag"],
+            check=False,
             cwd=str(path),
             capture_output=True,
             text=True,
             timeout=10,
         )
         return len([t for t in result.stdout.splitlines() if t.strip()])
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return 0
 
 

@@ -112,7 +112,6 @@ def generate_diff_markdown(baseline: dict, current: ScanResult) -> str:
     # Score delta
     lines.append("## Score")
     lines.append("")
-    arrow = "up" if diff.delta > 0 else ("down" if diff.delta < 0 else "same")
     if diff.delta > 0:
         lines.append(
             f"### {diff.current_passed}/{diff.current_total} (was {diff.baseline_passed}/{diff.baseline_total})"

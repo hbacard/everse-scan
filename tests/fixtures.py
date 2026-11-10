@@ -10,9 +10,9 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
     repo.mkdir(parents=True, exist_ok=True)
 
     # Init git
-    subprocess.run(["git", "init"], cwd=str(repo), capture_output=True)
-    subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=str(repo), capture_output=True)
-    subprocess.run(["git", "config", "user.name", "Test User"], cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "init"],check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "config", "user.email", "test@test.com"],check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Test User"],check=False, cwd=str(repo), capture_output=True)
 
     # README.md
     (repo / "README.md").write_text(
@@ -119,9 +119,9 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
     (repo / "CHANGELOG.md").write_text("# Changelog\n\n## 0.1.0\n\n- Initial release\n")
 
     # Commit
-    subprocess.run(["git", "add", "-A"], cwd=str(repo), capture_output=True)
-    subprocess.run(["git", "commit", "-m", "Initial commit"], cwd=str(repo), capture_output=True)
-    subprocess.run(["git", "tag", "v0.1.0"], cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "add", "-A"], check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "commit", "-m", "Initial commit"], check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "tag", "v0.1.0"], check=False, cwd=str(repo), capture_output=True)
 
     return repo
 

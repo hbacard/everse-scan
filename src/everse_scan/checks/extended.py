@@ -1,4 +1,4 @@
-"""Extended checks for M5: covers additional RSQKit tasks to reach 35+ total."""
+"""Extended checks: covers additional RSQKit tasks to reach 35+ total."""
 
 from __future__ import annotations
 
@@ -538,6 +538,7 @@ def check_future_proofing(repo_path: str) -> CheckResult:
 
     lockfiles = [
         "uv.lock",
+        "pdm.lock",
         "poetry.lock",
         "package-lock.json",
         "yarn.lock",
@@ -670,20 +671,18 @@ def check_env_sustainability(repo_path: str) -> CheckResult:
 def check_software_peer_review(repo_path: str) -> CheckResult:
     """Check for software peer review indicators (JOSS, rOpenSci, etc.)."""
     path = Path(repo_path)
-    details: list[str] = []
 
     # Check for JOSS paper
     paper_dir = path / "paper"
-    if paper_dir.is_dir():
-        if any(paper_dir.glob("*.tex")) or any(paper_dir.glob("paper.md")):
-            return CheckResult(
-                name="Software peer review",
-                status=CheckStatus.PASS,
-                message="JOSS paper found (peer review indicator)",
-                details=["paper/ directory with .tex or .md found"],
-                rsqkit_url="https://everse.software/RSQKit/publishing_software",
-                category="quality",
-            )
+    if paper_dir.is_dir() and (any(paper_dir.glob("*.tex")) or any(paper_dir.glob("paper.md"))):
+        return CheckResult(
+            name="Software peer review",
+            status=CheckStatus.PASS,
+            message="JOSS paper found (peer review indicator)",
+            details=["paper/ directory with .tex or .md found"],
+            rsqkit_url="https://everse.software/RSQKit/publishing_software",
+            category="quality",
+        )
 
     # Check README for review badges
     readme = path / "README.md"

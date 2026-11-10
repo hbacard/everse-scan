@@ -36,6 +36,7 @@ def check_cffconvert(repo_path: str) -> CheckResult:
         result = subprocess.run(
             ["cffconvert", "--validate", "-i", str(cff_path)],
             capture_output=True,
+            check=False,
             text=True,
             timeout=30,
         )
@@ -58,7 +59,7 @@ def check_cffconvert(repo_path: str) -> CheckResult:
                 rsqkit_url="https://github.com/citation-file-format/cffconvert",
                 category="fair",
             )
-    except (FileNotFoundError, Exception):
+    except (FileNotFoundError):
         pass
 
     # Fallback: heuristic YAML validation

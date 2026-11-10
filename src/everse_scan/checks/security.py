@@ -53,7 +53,7 @@ def _scan_secrets(path: Path) -> list[tuple[str, str]]:
                     for pattern, name in SECRET_PATTERNS:
                         if re.search(pattern, content):
                             findings.append((str(fpath.relative_to(path)), name))
-                except Exception:
+                except (FileNotFoundError, OSError):
                     pass
     return findings
 
