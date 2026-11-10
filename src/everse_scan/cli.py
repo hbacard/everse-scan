@@ -72,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
     repo_path = args.repo
 
     # Handle GitHub URLs
-    if repo_path.startswith("https://github.com/") or repo_path.startswith("git@github.com:"):
+    if repo_path.startswith(("https://github.com/", "git@github.com:")):
         import subprocess
         import tempfile
 

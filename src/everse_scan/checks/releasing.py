@@ -14,13 +14,14 @@ def _git_tags(path: Path) -> list[str]:
     try:
         result = subprocess.run(
             ["git", "tag"],
+            check=False,
             cwd=str(path),
             capture_output=True,
             text=True,
             timeout=10,
         )
         return [t.strip() for t in result.stdout.splitlines() if t.strip()]
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return []
 
 

@@ -79,29 +79,25 @@ def check_packaging(repo_path: str, language: str | None = None) -> CheckResult:
                 f"version={pj_info['has_version']}, main={pj_info['has_main']}"
             )
 
-    if language in ("R", None):
-        if (path / "DESCRIPTION").exists():
-            packaging_found.append("DESCRIPTION")
-            score += 2
-            details.append("DESCRIPTION: present")
+    if language in ("R", None) and (path / "DESCRIPTION").exists():
+        packaging_found.append("DESCRIPTION")
+        score += 2
+        details.append("DESCRIPTION: present")
 
-    if language in ("Julia", None):
-        if (path / "Project.toml").exists():
-            packaging_found.append("Project.toml")
-            score += 2
-            details.append("Project.toml: present")
+    if language in ("Julia", None) and (path / "Project.toml").exists():
+        packaging_found.append("Project.toml")
+        score += 2
+        details.append("Project.toml: present")
 
-    if language in ("Rust", None):
-        if (path / "Cargo.toml").exists():
-            packaging_found.append("Cargo.toml")
-            score += 2
-            details.append("Cargo.toml: present")
+    if language in ("Rust", None) and (path / "Cargo.toml").exists():
+        packaging_found.append("Cargo.toml")
+        score += 2
+        details.append("Cargo.toml: present")
 
-    if language in ("C/C++", None):
-        if (path / "CMakeLists.txt").exists():
-            packaging_found.append("CMakeLists.txt")
-            score += 2
-            details.append("CMakeLists.txt: present")
+    if language in ("C/C++", None) and (path / "CMakeLists.txt").exists():
+        packaging_found.append("CMakeLists.txt")
+        score += 2
+        details.append("CMakeLists.txt: present")
 
     if not packaging_found:
         return CheckResult(

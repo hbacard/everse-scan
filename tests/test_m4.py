@@ -78,7 +78,6 @@ class TestPrioritization:
             message="No tests",
             category="engineering",
         )
-        q_tool = classify(check, tier="tool")
         q_script = classify(check, tier="script")
         # Script tier should not upgrade engineering to critical
         assert q_script != CRITICAL_FIX

@@ -39,7 +39,7 @@ def check_structure(repo_path: str) -> CheckResult:
     top_dirs = _list_top_dirs(path)
 
     found_expected = EXPECTED_DIRS & top_dirs
-    missing_expected = EXPECTED_DIRS - top_dirs
+    EXPECTED_DIRS - top_dirs
 
     has_src = _has_src_layout(path)
     has_tests = "tests" in top_dirs or "test" in top_dirs

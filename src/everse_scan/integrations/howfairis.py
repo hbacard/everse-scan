@@ -27,7 +27,7 @@ def check_howfairis(repo_path: str) -> list[CheckResult]:
     # Try to use howfairis if available
     try:
         return _check_with_howfairis(repo_path)
-    except (ImportError, Exception):
+    except (ImportError):
         pass
 
     # Fallback: deterministic heuristic checks
@@ -85,7 +85,6 @@ def _check_principle(path: Path, principle_id: str, description: str) -> CheckRe
         if pp.exists():
             content = pp.read_text(errors="ignore").lower()
             in_pyproject = "license" in content
-        has_any = has_license or in_pyproject
         return CheckResult(
             name="FAIR: license",
             status=CheckStatus.PASS if has_license else (CheckStatus.WARN if in_pyproject else CheckStatus.FAIL),

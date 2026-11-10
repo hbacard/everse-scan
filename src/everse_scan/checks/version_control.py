@@ -14,13 +14,14 @@ def _run_git(args: list[str], cwd: str) -> str:
     try:
         result = subprocess.run(
             ["git"] + args,
+            check=False,
             cwd=cwd,
             capture_output=True,
             text=True,
             timeout=10,
         )
         return result.stdout.strip()
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return ""
 
 
@@ -63,8 +64,8 @@ def check_version_control(repo_path: str) -> CheckResult:
         f"Commits: {commit_count}",
         f"Authors: {author_count}",
         f"Tags/releases: {tag_count}",
-        f".gitignore: {'present' if gitignore.exists() else 'missing'} "
-        f"({gitignore_quality}/{len(COMMON_GITIGNORE_ENTRIES)} common entries)",
+        (f".gitignore: {'present' if gitignore.exists() else 'missing'} "
+        f"({gitignore_quality}/{len(COMMON_GITIGNORE_ENTRIES)} common entries)"),
     ]
 
     recs = []
