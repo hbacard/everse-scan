@@ -7,7 +7,7 @@ Scan your research software repository and get a structured quality and FAIR com
 ![Version](https://img.shields.io/badge/version-0.5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![Python](https://img.shields.io/badge/python-3.12%20to%203.13-blue)
 
 ## What is everse-scan?
 
