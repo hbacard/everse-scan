@@ -101,10 +101,10 @@ def generate_diff_markdown(baseline: dict, current: ScanResult) -> str:
 
     lines.append("# EVERSE Scan — Progress Report")
     lines.append("")
-    lines.append(f"**Repository**: {current.repo_name}")
-    lines.append(f"**Current date**: {current.date}")
+    lines.append("- **Repository**: " + current.repo_name)
+    lines.append("- **Current date**: " + current.date)
     baseline_date = baseline.get("date", "unknown")
-    lines.append(f"**Baseline date**: {baseline_date}")
+    lines.append(f"- **Baseline date**: {baseline_date}")
     lines.append("")
     lines.append("---")
     lines.append("")
