@@ -64,8 +64,10 @@ def check_version_control(repo_path: str) -> CheckResult:
         f"Commits: {commit_count}",
         f"Authors: {author_count}",
         f"Tags/releases: {tag_count}",
-        (f".gitignore: {'present' if gitignore.exists() else 'missing'} "
-        f"({gitignore_quality}/{len(COMMON_GITIGNORE_ENTRIES)} common entries)"),
+        (
+            f".gitignore: {'present' if gitignore.exists() else 'missing'} "
+            f"({gitignore_quality}/{len(COMMON_GITIGNORE_ENTRIES)} common entries)"
+        ),
     ]
 
     recs = []

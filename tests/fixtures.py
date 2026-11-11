@@ -10,9 +10,9 @@ def create_sample_repo(base: Path, name: str = "sample-python") -> Path:
     repo.mkdir(parents=True, exist_ok=True)
 
     # Init git
-    subprocess.run(["git", "init"],check=False, cwd=str(repo), capture_output=True)
-    subprocess.run(["git", "config", "user.email", "test@test.com"],check=False, cwd=str(repo), capture_output=True)
-    subprocess.run(["git", "config", "user.name", "Test User"],check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "init"], check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "config", "user.email", "test@test.com"], check=False, cwd=str(repo), capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Test User"], check=False, cwd=str(repo), capture_output=True)
 
     # README.md
     (repo / "README.md").write_text(
