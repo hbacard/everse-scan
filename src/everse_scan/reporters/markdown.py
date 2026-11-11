@@ -168,15 +168,15 @@ def generate_markdown(result: ScanResult) -> str:
     # Header
     lines.append("# EVERSE Scan Report")
     lines.append("")
-    lines.append(f"**Repository**: {result.repo_name}")
-    lines.append(f"**Date**: {result.date}")
+    lines.append("- **Repository**: " + result.repo_name)
+    lines.append("- **Date**: " + result.date)
     langs = ", ".join(result.languages) if result.languages else "Unknown"
-    lines.append(f"**Language(s) detected**: {langs}")
-    lines.append(f"**Software tier**: {_tier_label(result.tier)}")
-    lines.append(f"**Lifecycle stage**: {_lifecycle_label(result.lifecycle)}")
-    lines.append(f"**AI Intensity Profile**: {'Found' if result.ai_intensity_profile.found else 'Not found'}")
+    lines.append(f"- **Language(s) detected**: {langs}")
+    lines.append(f"- **Software tier**: {_tier_label(result.tier)}")
+    lines.append(f"- **Lifecycle stage**: {_lifecycle_label(result.lifecycle)}")
+    lines.append(f"- **AI Intensity Profile**: {'Found' if result.ai_intensity_profile.found else 'Not found'}")
     if result.funder:
-        lines.append(f"**Funder**: {result.funder_label} (confidence: {result.funder_confidence})")
+        lines.append(f"- **Funder**: {result.funder_label} (confidence: {result.funder_confidence})")
     lines.append("")
     lines.append("---")
     lines.append("")

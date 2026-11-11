@@ -59,7 +59,7 @@ def check_cffconvert(repo_path: str) -> CheckResult:
                 rsqkit_url="https://github.com/citation-file-format/cffconvert",
                 category="fair",
             )
-    except (FileNotFoundError):
+    except FileNotFoundError:
         pass
 
     # Fallback: heuristic YAML validation

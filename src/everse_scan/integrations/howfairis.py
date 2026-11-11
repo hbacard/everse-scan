@@ -27,7 +27,7 @@ def check_howfairis(repo_path: str) -> list[CheckResult]:
     # Try to use howfairis if available
     try:
         return _check_with_howfairis(repo_path)
-    except (ImportError):
+    except ImportError:
         pass
 
     # Fallback: deterministic heuristic checks
