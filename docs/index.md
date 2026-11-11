@@ -17,8 +17,21 @@ a prioritized action plan.
 
 ## Quick start
 
+Install with your preferred tool (**pdm** is used by the maintainers):
+
+```bash
+pdm install -d
+```
+
+Alternatively with `uv`:
+
 ```bash
 uv pip install -e ".[dev]"
+```
+
+Then scan a repository:
+
+```bash
 everse-scan ./my-repo
 ```
 
@@ -56,8 +69,19 @@ src/everse_scan/
 
 ## Development
 
+Install in dev mode with **pdm** (used by the maintainers) or `uv`:
+
+```bash
+pdm install -d
+```
+
 ```bash
 uv pip install -e ".[dev]"
+```
+
+Run the tests:
+
+```bash
 python3 -m pytest tests/ -v
 ```
 
