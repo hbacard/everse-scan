@@ -6,3 +6,10 @@ __pycache__/
 .pdm-python
 pdm.lock
 report-*
+.venv/
+.env
+dist/
+build/
+*.egg-info/
+.coverage
+.DS_Store

@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: everse-scan
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Hugo
+    family-names: Bacard
+    email: hugo.bacard@ijclab.in2p3.fr
+    affiliation: CNRS/IJCLab
+    orcid: 'https://orcid.org/0000-0001-9216-494X'
+repository-code: 'https://github.com/hbacard/everse-scan.git'
+abstract: >-
+  everse-scan is a command-line tool that analyzes research
+  software repositories and generates a structured report on
+  software quality and FAIR compliance based on
+  EVERSE/RSQKit best practices.
+keywords:
+  - EVERSE
+  - RSQKit
+  - FAIR
+  - Research Software
+  - code-quality
+license: MIT
+version: 0.5.0
+date-released: 2026-11-11
+# TODO: replace the placeholder DOI below with the DOI assigned by Zenodo
+# after the first release (see https://zenodo.org).
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.0000000

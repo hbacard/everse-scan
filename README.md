@@ -8,6 +8,7 @@ Scan your research software repository and get a structured quality and FAIR com
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.12%20to%203.13-blue)
+[![CI](https://github.com/hbacard/everse-scan/actions/workflows/ci.yml/badge.svg)](https://github.com/hbacard/everse-scan/actions/workflows/ci.yml)
 
 ## What is everse-scan?
 
@@ -35,15 +36,23 @@ Scan your research software repository and get a structured quality and FAIR com
 
 ## Quick start
 
-```bash
-pip install -e .
-everse-scan ./my-repo
-```
+Install the package with **pdm** (used by the maintainers), **uv**, or plain **pip** — all three work:
 
-Or with `uv`:
+```bash
+pdm install -d
+```
 
 ```bash
 uv pip install -e ".[dev]"
+```
+
+```bash
+pip install -e .
+```
+
+Then scan any repository:
+
+```bash
 everse-scan ./my-repo
 ```
 
@@ -273,10 +282,19 @@ src/everse_scan/
 ## Development
 
 ```bash
-# Install in dev mode
-uv pip install -e ".[dev]"
+# Install in dev mode with your preferred tool (pdm is used by the maintainers)
+pdm install -d
+```
 
-# Run tests
+Alternatively with `uv`:
+
+```bash
+uv pip install -e ".[dev]"
+```
+
+Then run tests:
+
+```bash
 python3 -m pytest tests/ -v
 
 # Scan everse-scan itself
