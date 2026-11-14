@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest a new feature or improvement for everse-scan
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please describe the problem and the solution you propose.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What is missing, or what problem does this solve? Link any related RSQKit task or issue.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like everse-scan to do? Include example commands or output if possible.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds or alternative approaches you've tried.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to help implement this?
+      options:
+        - label: I can open a pull request
+        - label: I can help test

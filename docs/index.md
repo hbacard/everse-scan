@@ -85,7 +85,22 @@ Run the tests:
 python3 -m pytest tests/ -v
 ```
 
+## API reference
+
+The command-line options and the programmatic Python API are documented in the
+[API reference](api.md).
+
 ## Contributing
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md) if present, and the repository
-[README](../README.md) for project conventions.
+Contributions are welcome! Please read:
+
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — how to set up, test, and submit changes
+- [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) — community expectations
+- [SECURITY.md](../SECURITY.md) — how to report a vulnerability
+
+Release and process documentation:
+
+- [CHANGELOG.md](../CHANGELOG.md) — release history
+- [REPRODUCIBILITY.md](../REPRODUCIBILITY.md) — how to reproduce a scan
+- [DMP.md](../DMP.md) — data management plan
+- [SUSTAINABILITY.md](../SUSTAINABILITY.md) — software sustainability plan

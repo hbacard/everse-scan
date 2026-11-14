@@ -1,0 +1,17 @@
+# Code owners — used for review accountability and automatic reviewer assignment.
+# Pattern: <glob> <owner>
+
+# Default: the maintainer reviews everything
+* @hbacard
+
+# Core source code
+/src/ @hbacard
+
+# GitHub configuration (CI/CD, templates, security)
+/.github/ @hbacard
+
+# Tests
+/tests/ @hbacard
+
+# Documentation
+/docs/ *.md @hbacard

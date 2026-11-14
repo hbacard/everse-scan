@@ -28,3 +28,8 @@ keywords:
 license: MIT
 version: 0.5.0
 date-released: 2026-11-11
+# TODO: replace the placeholder DOI below with the DOI assigned by Zenodo
+# after the first release (see https://zenodo.org).
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.0000000

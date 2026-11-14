@@ -1,0 +1,24 @@
+{
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "title": "everse-scan",
+  "description": "Research repository analysis tool: generates a structured report on software quality and FAIR compliance with EVERSE/RSQKit practices.",
+  "creators": [
+    {
+      "name": "Bacard, Hugo",
+      "affiliation": "CNRS/IJCLab",
+      "orcid": "0000-0001-9216-494X"
+    }
+  ],
+  "keywords": [
+    "EVERSE",
+    "RSQKit",
+    "FAIR",
+    "research software",
+    "code quality",
+    "scan"
+  ],
+  "language": "eng",
+  "grants": []
+}
