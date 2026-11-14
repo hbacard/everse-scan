@@ -1,0 +1,16 @@
+schema_version: "1.0.0"
+project:
+  name: everse-scan
+  content_type: software
+ai_usage:
+  used: true
+  summary: >-
+    AI was used via the opencode coding agent to plan and implement repository
+    quality and FAIR/RSQKit improvements generated from the EVERSE scan report.
+  level: medium
+  tools:
+    - name: opencode
+      type: coding agent
+declaration:
+  date: "2026-11-14"
+  declared_by: Hugo Bacard
