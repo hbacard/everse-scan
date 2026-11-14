@@ -321,13 +321,14 @@ everse-scan . --format both -o report
 EVERSE consortium. It is an independent, community-driven tool inspired by the best
 practices published in the [EVERSE RSQKit](https://everse.software/RSQKit/).
 
-This work received financial support from the [EVERSE project](https://everse.software/)
-via CNRS, within which the author (Hugo Bacard) is employed.
+The author (Hugo Bacard) is employed within the [EVERSE project](https://everse.software/)
+via CNRS. The EVERSE project has received funding from the European Union's Horizon
+Europe Programme under **GA 101129744 — EVERSE — HORIZON-INFRA-2023-EOSC-01-02**.
 
 Development of this tool used AI assistance provided by the following AI providers:
 
-- **ILaaS**
-- **Albert API**
+- [**ILaaS**](https://www.ilaas.fr/)
+- [**Albert API**](https://ia.numerique.gouv.fr/outils-ia/albert-api/)
 
 ## License
 
