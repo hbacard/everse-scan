@@ -13,3 +13,7 @@ build/
 *.egg-info/
 .coverage
 .DS_Store
+progression.md
+milestone.md
+*-report.md
+
