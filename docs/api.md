@@ -73,8 +73,8 @@ Result of a full scan: `ScanResult` (see below).
 from everse_scan.scanner import scan_repo
 
 result = scan_repo("./my-repo")
-print(result.checks)      # list[CheckResult]
-print(result.overall)     # aggregate status
+print(result.checks)  # list[CheckResult]
+print(result.overall)  # aggregate status
 ```
 
 ### Data models (`everse_scan.models`)
