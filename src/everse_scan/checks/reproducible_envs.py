@@ -8,6 +8,7 @@ from everse_scan.models import CheckResult, CheckStatus
 
 LOCKFILES = {
     "uv.lock": ("uv", "Python"),
+    "pdm.lock": ("pdm", "Python"),
     "poetry.lock": ("poetry", "Python"),
     "requirements.txt": ("pip", "Python"),
     "Pipfile.lock": ("pipenv", "Python"),
