@@ -315,6 +315,21 @@ everse-scan . --format both -o report
 | Planned | RSQKit knowledge base auto-sync |
 | Planned | Additional language support |
 
+## Acknowledgements
+
+`everse-scan` is **not an official EVERSE project**, nor an official product of the
+EVERSE consortium. It is an independent, community-driven tool inspired by the best
+practices published in the [EVERSE RSQKit](https://everse.software/RSQKit/).
+
+The author (Hugo Bacard) is employed within the [EVERSE project](https://everse.software/)
+via CNRS. The EVERSE project has received funding from the European Union's Horizon
+Europe Programme under **GA 101129744 — EVERSE — HORIZON-INFRA-2023-EOSC-01-02**.
+
+Development of this tool used AI assistance provided by the following AI providers:
+
+- [**ILaaS**](https://www.ilaas.fr/)
+- [**Albert API**](https://ia.numerique.gouv.fr/outils-ia/albert-api/)
+
 ## License
 
 MIT

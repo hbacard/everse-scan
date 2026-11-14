@@ -1,1 +1,1 @@
-The file milestone.md will be used to save and write the milestones while the progression.md will be used to write how the progression of the implementations.
+`milestone.md` records the project's milestones (the plan). `progression.md` tracks the implementation progress against those milestones.
