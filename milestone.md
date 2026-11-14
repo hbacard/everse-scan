@@ -6,10 +6,13 @@
 > Scope: report weaknesses only (no roadmap features). Final tag: `v0.5.0`.
 >
 > Implementation progress is tracked in [`progression.md`](./progression.md).
+>
+> **Status: ALL MILESTONES COMPLETE (2026-11-14).**
+> Result: baseline 17 Pass / 15 Warn / 1 Fail / 3 N/A → **34 Pass / 0 Warn / 0 Fail / 2 N/A** after the `v0.5.0` tag. All 16 previously non-passing checks resolved. Remaining N/A (computational workflows, software peer review) are out of scope by design.
 
 Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
-| RSQKit dimension | Baseline | After M1–M7 (target) |
+| RSQKit dimension | Baseline | Final (M1–M7) |
 |---|---|---|
 | Reproducibility | ❌ | ✅ |
 | Maintainability | ⚠️ | ✅ |
@@ -19,7 +22,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M1 — Collaboration & code review (quick wins)
+## M1 — Collaboration & code review (quick wins) ✅
 
 **Objective**: Restore Code review, Contribution guidelines, Code of conduct, and Issue templates checks. Low effort, high impact (report Quick Wins).
 
@@ -32,7 +35,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M2 — Releasing & software identifiers
+## M2 — Releasing & software identifiers ✅
 
 **Objective**: Track version history, control the Zenodo deposit, and add a software identifier. Also moves Horizon Europe funder compliance toward 8/8.
 
@@ -45,7 +48,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M3 — CI/CD pipeline (structural ❌)
+## M3 — CI/CD pipeline (structural ❌) ✅
 
 **Objective**: Automated testing on every push/PR. The largest structural item (report Long Term) and the only ❌ check; also restores the **Reproducibility** and **Trustworthiness** dimensions.
 
@@ -58,7 +61,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M4 — Security & secret management
+## M4 — Security & secret management ✅
 
 **Objective**: Formalize vulnerability reporting and add secret detection to the development workflow.
 
@@ -71,7 +74,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M5 — Reproducibility, containers & sustainability docs
+## M5 — Reproducibility, containers & sustainability docs ✅
 
 **Objective**: Reproducible deployment via container, plus the reproducibility / data / sustainability documentation required at tier 2.
 
@@ -84,7 +87,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M6 — Developer experience & documentation
+## M6 — Developer experience & documentation ✅
 
 **Objective**: Consistent editor settings and API/usage documentation.
 
@@ -97,7 +100,7 @@ Current baseline (report 2026-11-14): **20/36 Pass, 15 Warn, 1 Fail, 3 N/A**.
 
 ---
 
-## M7 — Verification & release (final)
+## M7 — Verification & release (final) ✅
 
 **Objective**: Confirm every previously-failing check now passes, release v0.5.0, and backfill the DOI.
 

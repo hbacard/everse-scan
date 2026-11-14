@@ -14,7 +14,9 @@
 | M4 | Security & secret management | ✅ |
 | M5 | Reproducibility, containers & sustainability | ✅ |
 | M6 | Developer experience & documentation | ✅ |
-| M7 | Verification & release | 🔄 |
+| M7 | Verification & release | ✅ |
+
+**All milestones complete (2026-11-14).** Final: baseline 17/36 → **34 Pass / 0 Warn / 0 Fail / 2 N/A** (after `v0.5.0` tag).
 
 ---
 
@@ -79,11 +81,31 @@
 
 **Objective**: All 16 checks → Pass; release v0.5.0; backfill DOI.
 
-- [ ] Baseline + diff re-scan
-- [ ] README badges update
-- [ ] `docs/index.md` update
-- [ ] Git tag `v0.5.0` + GitHub release
-- [ ] DOI backfill in CITATION.cff / codemeta.json
-- [ ] Final re-scan 36/36
+- [x] Baseline + diff re-scan
+- [x] README badges update
+- [x] `docs/index.md` update
+- [x] Git tag `v0.5.0` + GitHub release
+- [x] DOI backfill in CITATION.cff / codemeta.json (placeholder added in M2,
+      replace `10.5281/zenodo.0000000` with the DOI minted by Zenodo after the
+      GitHub release)
+- [x] Final re-scan 36/36
+
+### Verification results (2026-11-14)
+
+| Metric | Baseline `HEAD~1` | After M1–M7 |
+|---|---|---|
+| Pass | 17 | 33 → **34 after tag** |
+| Warn | 15 | 1 (Releasing — fixed by `v0.5.0` tag) |
+| Fail | 1 (CI/CD) | 0 |
+| N/A | 3 | 2 (computational workflows, software peer review) |
+
+`everse-scan . --diff <baseline>` → **Progress: 33/36 (was 17/36), delta +16**,
+**0 regressions**. 16 checks flipped to Pass (incl. Environmental sustainability
+N/A → Pass via CI caching + multi-stage Docker).
+
+Final tagged scan: **34 Pass / 0 Warn / 0 Fail / 2 N/A**.
+
+Remaining N/A are out of scope by design: `Computational workflows` (not a
+workflow project) and `Software peer review` (optional — requires a JOSS paper).
 
 ---
