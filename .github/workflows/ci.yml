@@ -45,7 +45,7 @@ jobs:
       - name: Run tests with coverage
         run: pytest -v --cov=everse_scan --cov-report=term-missing --cov-report=xml
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-py${{ matrix.python-version }}
           path: coverage.xml
@@ -65,7 +65,7 @@ jobs:
       - name: Smoke test CLI
         run: everse-scan --version
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
