@@ -12,7 +12,7 @@
       "@id": "https://orcid.org/0000-0001-9216-494X"
     }
   ],
-  "identifier": "https://doi.org/10.5281/zenodo.0000000",
+  "identifier": "https://doi.org/10.5281/zenodo.24243032",
   "codeRepository": "https://github.com/hbacard/everse-scan.git",
   "url": "https://github.com/hbacard/everse-scan",
   "description": "Research repository analysis tool: generates a structured report on software quality and FAIR compliance with EVERSE/RSQKit practices",
