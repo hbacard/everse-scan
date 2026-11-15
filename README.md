@@ -9,6 +9,7 @@ Scan your research software repository and get a structured quality and FAIR com
 ![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.12%20to%203.13-blue)
 [![CI](https://github.com/hbacard/everse-scan/actions/workflows/ci.yml/badge.svg)](https://github.com/hbacard/everse-scan/actions/workflows/ci.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24243032.svg)](https://doi.org/10.5281/zenodo.24243032)
 
 ## What is everse-scan?
 
