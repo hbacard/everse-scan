@@ -212,12 +212,7 @@ def create_gitlab_cpp_repo(base: Path, name: str = "sample-gitlab-cpp") -> Path:
     # GTest/ with C++ tests (not tests/)
     gtest = repo / "GTest"
     gtest.mkdir(exist_ok=True)
-    (gtest / "main_test.cxx").write_text(
-        '#include "gtest/gtest.h"\n'
-        "TEST(Reactor, Runs) {\n"
-        "    EXPECT_TRUE(true);\n"
-        "}\n"
-    )
+    (gtest / "main_test.cxx").write_text('#include "gtest/gtest.h"\nTEST(Reactor, Runs) {\n    EXPECT_TRUE(true);\n}\n')
 
     # cmake-build-debug/ build artifact noise (generated JS)
     build_artifacts = repo / "cmake-build-debug"

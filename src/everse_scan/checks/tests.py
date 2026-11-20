@@ -98,9 +98,9 @@ def check_tests(repo_path: str, language: str | None = None) -> CheckResult:
     test_files = _find_test_files(path)
     framework = _detect_test_framework(path, language)
 
-    has_tests_dir = (path / "tests").is_dir() or (path / "test").is_dir() or (path / "GTest").is_dir() or (
-        path / "gtest"
-    ).is_dir()
+    has_tests_dir = (
+        (path / "tests").is_dir() or (path / "test").is_dir() or (path / "GTest").is_dir() or (path / "gtest").is_dir()
+    )
 
     # Check for coverage config
     coverage_tools = []

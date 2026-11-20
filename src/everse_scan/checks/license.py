@@ -7,7 +7,16 @@ from pathlib import Path
 
 from everse_scan.models import CheckResult, CheckStatus
 
-LICENSE_FILES = {"LICENSE", "LICENSE.md", "LICENSE.txt", "LICENCE.txt", "LICENCE", "LICENCE.md", "COPYING", "COPYING.md"}
+LICENSE_FILES = {
+    "LICENSE",
+    "LICENSE.md",
+    "LICENSE.txt",
+    "LICENCE.txt",
+    "LICENCE",
+    "LICENCE.md",
+    "COPYING",
+    "COPYING.md",
+}
 
 SPDX_PATTERNS = {
     "MIT": r"MIT License|Permission is hereby granted, free of charge",

@@ -82,7 +82,12 @@ def check_security(repo_path: str) -> CheckResult:
         or (path / ".renovaterc.json").exists()
     )
     has_codeowners = False
-    for p in [path / ".github" / "CODEOWNERS", path / "CODEOWNERS", path / "docs" / "CODEOWNERS", path / ".gitlab" / "CODEOWNERS"]:
+    for p in [
+        path / ".github" / "CODEOWNERS",
+        path / "CODEOWNERS",
+        path / "docs" / "CODEOWNERS",
+        path / ".gitlab" / "CODEOWNERS",
+    ]:
         if p.exists():
             has_codeowners = True
             break
@@ -125,7 +130,9 @@ def check_security(repo_path: str) -> CheckResult:
 
     recs = []
     if not has_dependabot:
-        recs.append("Add Dependabot (.github/dependabot.yml) or Renovate (renovate.json) for dependency vulnerability scanning")
+        recs.append(
+            "Add Dependabot (.github/dependabot.yml) or Renovate (renovate.json) for dependency vulnerability scanning"
+        )
     if not has_codeowners:
         recs.append("Add a CODEOWNERS file for review accountability")
     if not has_security_policy:

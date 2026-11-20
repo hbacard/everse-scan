@@ -29,6 +29,7 @@ def _find_docs_dir(path: Path) -> Path | None:
             return d
     return None
 
+
 DOCSTRING_PATTERNS = {
     "Python": [r'"""', r"'''"],
     "JavaScript/TypeScript": [r"/\*\*", r"//"],
