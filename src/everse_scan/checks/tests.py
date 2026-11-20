@@ -16,11 +16,27 @@ def _find_test_files(path: Path) -> list[str]:
         "*.test.js",
         "*.spec.js",
         "test_*.cpp",
+        "*_test.cpp",
+        "*_test.cxx",
+        "*_test.cc",
         "*.test.ts",
         "*.spec.ts",
     ]
     results: list[str] = []
-    ignore_dirs = {".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build"}
+    ignore_dirs = {
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        "__pycache__",
+        "dist",
+        "build",
+        # Generated/build/IDE output that would skew test-file detection
+        "doxygen",
+        "cmake-build-debug",
+        "cmake-build-release",
+        ".idea",
+    }
     for root, dirs, files in os.walk(path):
         if any(p in ignore_dirs for p in Path(root).parts):
             dirs.clear()
@@ -65,6 +81,15 @@ def _detect_test_framework(path: Path, language: str | None) -> str | None:
         if runtests.exists():
             return "Test.jl"
 
+    if language == "C/C++":
+        if (path / "GTest").is_dir() or (path / "gtest").is_dir():
+            return "Google Test"
+        cmake = path / "CMakeLists.txt"
+        if cmake.exists() and "gtest" in cmake.read_text(errors="ignore").lower():
+            return "Google Test"
+        if cmake.exists() and "enable_testing" in cmake.read_text(errors="ignore").lower():
+            return "CTest"
+
     return None
 
 
@@ -73,7 +98,9 @@ def check_tests(repo_path: str, language: str | None = None) -> CheckResult:
     test_files = _find_test_files(path)
     framework = _detect_test_framework(path, language)
 
-    has_tests_dir = (path / "tests").is_dir() or (path / "test").is_dir()
+    has_tests_dir = (path / "tests").is_dir() or (path / "test").is_dir() or (path / "GTest").is_dir() or (
+        path / "gtest"
+    ).is_dir()
 
     # Check for coverage config
     coverage_tools = []

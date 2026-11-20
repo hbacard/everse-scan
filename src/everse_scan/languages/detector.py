@@ -23,6 +23,11 @@ IGNORE_DIRS = {
     ".hypothesis",
     "htmlcov",
     ".coverage",
+    # Generated/build/IDE output that would skew language detection
+    "doxygen",
+    "cmake-build-debug",
+    "cmake-build-release",
+    ".idea",
 }
 
 CONFIG_FILES = {

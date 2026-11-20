@@ -130,6 +130,7 @@ def _check_principle(path: Path, principle_id: str, description: str) -> CheckRe
         # Check for quality checklist / CI / static analysis
         checklist_indicators = [
             path / ".github" / "workflows",
+            path / ".gitlab-ci.yml",
             path / "pyproject.toml",
             path / "tox.ini",
             path / ".pre-commit-config.yaml",

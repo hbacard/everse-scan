@@ -81,6 +81,11 @@ def _count_source_files(path: Path) -> int:
         ".pytest_cache",
         ".mypy_cache",
         ".ruff_cache",
+        # Generated/build/IDE output that would skew source-file counts
+        "doxygen",
+        "cmake-build-debug",
+        "cmake-build-release",
+        ".idea",
     }
     count = 0
     for root, dirs, files in os.walk(path):
@@ -152,8 +157,9 @@ def _has_docker(path: Path) -> bool:
 
 
 def _has_extensive_docs(path: Path) -> bool:
-    docs = path / "docs"
-    if not docs.is_dir():
+    # Real projects use docs/, doc/, documentation/ or documentations/
+    docs = next((path / n for n in ("docs", "doc", "documentation", "documentations") if (path / n).is_dir()), None)
+    if docs is None:
         return False
     md_files = list(docs.rglob("*.md")) + list(docs.rglob("*.rst"))
     return len(md_files) >= 3

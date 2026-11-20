@@ -18,9 +18,27 @@ IGNORE_DIRS = {
     ".mypy_cache",
     ".ruff_cache",
     ".eggs",
+    # Generated/build/IDE output that would skew structure listing
+    "cmake-build-debug",
+    "cmake-build-release",
+    ".idea",
 }
 
-EXPECTED_DIRS = {"src", "tests", "docs", "examples", "test"}
+# Standard dirs across ecosystems (GitHub/Python + GitLab/C++ CMake layouts)
+EXPECTED_DIRS = {
+    "src",
+    "source",
+    "tests",
+    "test",
+    "docs",
+    "doc",
+    "documentation",
+    "documentations",
+    "examples",
+    "example",
+    "GTest",
+    "gtest",
+}
 
 
 def _list_top_dirs(path: Path) -> set[str]:
@@ -42,8 +60,8 @@ def check_structure(repo_path: str) -> CheckResult:
     EXPECTED_DIRS - top_dirs
 
     has_src = _has_src_layout(path)
-    has_tests = "tests" in top_dirs or "test" in top_dirs
-    has_docs = "docs" in top_dirs
+    has_tests = bool(top_dirs & {"tests", "test", "GTest", "gtest"})
+    has_docs = bool(top_dirs & {"docs", "doc", "documentation", "documentations"})
 
     details = [
         f"Top-level directories: {', '.join(sorted(top_dirs))}" if top_dirs else "No directories found",
@@ -70,7 +88,7 @@ def check_structure(repo_path: str) -> CheckResult:
     if not has_tests:
         recs.append("Create a tests/ directory for test files")
     if not has_docs:
-        recs.append("Create a docs/ directory for documentation")
+        recs.append("Create a documentation directory (docs/ or documentation/)")
 
     return CheckResult(
         name="Structure",

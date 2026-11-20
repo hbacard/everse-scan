@@ -18,6 +18,17 @@ DOC_SITE_FILES = {
     "_pkgdown.yml": "pkgdown",
 }
 
+# Real projects use docs/, doc/, documentation/ or documentations/
+DOC_DIR_NAMES = ("docs", "doc", "documentation", "documentations")
+
+
+def _find_docs_dir(path: Path) -> Path | None:
+    for name in DOC_DIR_NAMES:
+        d = path / name
+        if d.is_dir():
+            return d
+    return None
+
 DOCSTRING_PATTERNS = {
     "Python": [r'"""', r"'''"],
     "JavaScript/TypeScript": [r"/\*\*", r"//"],
@@ -32,7 +43,20 @@ SOURCE_EXTENSIONS = {".py", ".js", ".ts", ".R", ".r", ".jl", ".c", ".cpp", ".cc"
 def _count_docstrings(path: Path, language: str | None) -> int:
     patterns = DOCSTRING_PATTERNS.get(language or "Python", [r'"""'])
     count = 0
-    ignore_dirs = {".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build"}
+    ignore_dirs = {
+        ".git",
+        ".venv",
+        "venv",
+        "node_modules",
+        "__pycache__",
+        "dist",
+        "build",
+        # Generated/build/IDE output that would skew docstring counting
+        "doxygen",
+        "cmake-build-debug",
+        "cmake-build-release",
+        ".idea",
+    }
     for root, dirs, files in os.walk(path):
         if any(p in ignore_dirs for p in Path(root).parts):
             dirs.clear()
@@ -48,10 +72,11 @@ def _count_docstrings(path: Path, language: str | None) -> int:
 def check_documentation(repo_path: str, language: str | None = None) -> CheckResult:
     path = Path(repo_path)
 
-    docs_dir = path / "docs"
-    has_docs_dir = docs_dir.is_dir()
+    docs_dir = _find_docs_dir(path)
+    has_docs_dir = docs_dir is not None
     docs_file_count = 0
     if has_docs_dir:
+        assert docs_dir is not None
         docs_file_count = len(list(docs_dir.rglob("*.md")) + list(docs_dir.rglob("*.rst")))
 
     doc_sites = []
@@ -66,7 +91,7 @@ def check_documentation(repo_path: str, language: str | None = None) -> CheckRes
     readme_quality = len(readme.read_text(errors="ignore")) if has_readme else 0
 
     details = [
-        f"docs/ directory: {'yes' if has_docs_dir else 'no'} ({docs_file_count} files)",
+        f"Documentation dir: {'yes (' + docs_dir.name + '/)' if has_docs_dir else 'no'} ({docs_file_count} files)",
         f"Doc site configs: {', '.join(doc_sites) if doc_sites else 'none'}",
         f"Docstrings found: {docstring_count}",
         f"README: {'present' if has_readme else 'missing'} ({readme_quality} chars)",
@@ -93,7 +118,7 @@ def check_documentation(repo_path: str, language: str | None = None) -> CheckRes
 
     recs = []
     if not has_docs_dir:
-        recs.append("Create a docs/ directory for documentation")
+        recs.append("Create a documentation directory (docs/ or documentation/)")
     if not doc_sites:
         tool_rec = {"Python": "Sphinx or MkDocs", "R": "pkgdown", "JavaScript/TypeScript": "Docusaurus"}.get(
             language or "", "a documentation generator"
