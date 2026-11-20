@@ -11,6 +11,16 @@ PR_TEMPLATE_PATHS = [
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/pull_request_template/",
     "docs/pull_request_template.md",
+    # GitLab MR templates
+    ".gitlab/merge_request_template.md",
+    ".gitlab/merge_request_templates/",
+]
+
+CODEOWNERS_PATHS = [
+    ".github/CODEOWNERS",
+    "CODEOWNERS",
+    "docs/CODEOWNERS",
+    ".gitlab/CODEOWNERS",
 ]
 
 
@@ -19,20 +29,23 @@ def check_code_review(repo_path: str) -> CheckResult:
 
     has_pr_template = any((path / p).exists() or (path / p).is_dir() for p in PR_TEMPLATE_PATHS)
 
-    has_codeowners = False
-    for p in [path / ".github" / "CODEOWNERS", path / "CODEOWNERS"]:
-        if p.exists():
-            has_codeowners = True
-            break
+    has_codeowners = any((path / p).exists() for p in CODEOWNERS_PATHS)
 
     has_contributing = False
-    for p in [path / "CONTRIBUTING.md", path / ".github" / "CONTRIBUTING.md", path / "docs" / "CONTRIBUTING.md"]:
+    for p in [
+        path / "CONTRIBUTING.md",
+        path / ".github" / "CONTRIBUTING.md",
+        path / "docs" / "CONTRIBUTING.md",
+        path / "documentation" / "CONTRIBUTING.md",
+    ]:
         if p.exists():
             has_contributing = True
             break
 
     # Branch protection can't be checked locally, note it
-    has_issue_template = (path / ".github" / "ISSUE_TEMPLATE").is_dir()
+    has_issue_template = (path / ".github" / "ISSUE_TEMPLATE").is_dir() or (
+        path / ".gitlab" / "issue_templates"
+    ).is_dir()
 
     details = [
         f"PR template: {'yes' if has_pr_template else 'no'}",
@@ -45,7 +58,7 @@ def check_code_review(repo_path: str) -> CheckResult:
 
     recs = []
     if not has_pr_template:
-        recs.append("Add a PR template (.github/pull_request_template.md)")
+        recs.append("Add a PR/MR template (.github/pull_request_template.md or .gitlab/merge_request_templates/)")
     if not has_codeowners:
         recs.append("Add a CODEOWNERS file for review accountability")
     if not has_contributing:

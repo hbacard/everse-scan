@@ -20,6 +20,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Developer experience: `.editorconfig`, `docs/api.md`.
 - Metadata: `.zenodo.json`, DOI identifier in `CITATION.cff` and `codemeta.json`.
 
+### Changed
+
+- GitLab-hosted repositories are now fully supported, not just GitHub ones:
+  - CI/CD: `.gitlab-ci.yml` content is analyzed for test/lint/matrix jobs, and
+    Renovate is recognized as the GitLab dependency-update bot.
+  - Remote URL scans use a full clone, so commit counts and release tags are
+    accurate for GitHub and GitLab.
+  - Collaboration & security: GitLab merge-request and issue templates
+    (`.gitlab/merge_request_templates/`, `.gitlab/issue_templates/`) and
+    CODEOWNERS (root/`docs/`/`.gitlab/`) are detected.
+  - Layout conventions: `doc/`, `documentation/`, `documentations/` count as a
+    docs directory; C++/CMake layouts (`source/`, `GTest/`, `example`) are
+    recognized; `.cxx`/`.cc` test files detected with Google Test/CTest.
+  - Generated/build/IDE output (`doxygen/`, `cmake-build-*`, `.idea`) is
+    excluded from language, structure, test, security and docstring scans, so a
+    C++ project with doxygen HTML is no longer misdetected as JavaScript.
+  - `CeCILL` (and `CeCILL-B`) license text is now recognized in `LICENCE.txt`.
+- Scan report reflects these fixes: verified on a real GitLab C++ repository
+  (1598 commits) with language detection, license, tests and structure corrected.
+
 ## [0.5.0] - 2026-11-11
 
 ### Added

@@ -33,6 +33,33 @@ def _check_workflow_content(path: Path) -> dict[str, bool]:
     return {"test": has_test_job, "lint": has_lint_job, "matrix": has_matrix}
 
 
+def _check_gitlab_ci_content(path: Path) -> dict[str, bool]:
+    """Analyze .gitlab-ci.yml (jobs + script) for test/lint/matrix, like the GitHub workflows scan."""
+    has_test_job = False
+    has_lint_job = False
+    has_matrix = False
+    ci_file = path / ".gitlab-ci.yml"
+    if ci_file.exists():
+        content = ci_file.read_text(errors="ignore").lower()
+        if any(k in content for k in ("test", "pytest", "ctest", "gtest", "unittest")):
+            has_test_job = True
+        if any(k in content for k in ("lint", "clang-tidy", "cppcheck", "ruff", "eslint")):
+            has_lint_job = True
+        if "matrix" in content or "parallel:" in content:
+            has_matrix = True
+    return {"test": has_test_job, "lint": has_lint_job, "matrix": has_matrix}
+
+
+def _has_dependency_bot(path: Path) -> bool:
+    """Dependabot on GitHub, Renovate on GitLab (or GitHub)."""
+    return (
+        (path / ".github" / "dependabot.yml").exists()
+        or (path / "renovate.json").exists()
+        or (path / ".renovaterc").exists()
+        or (path / ".renovaterc.json").exists()
+    )
+
+
 def check_cicd(repo_path: str) -> CheckResult:
     path = Path(repo_path)
 
@@ -52,15 +79,22 @@ def check_cicd(repo_path: str) -> CheckResult:
             category="quality",
         )
 
-    wf_info = _check_workflow_content(path)
-    has_dependabot = (path / ".github" / "dependabot.yml").exists()
+    gh_info = _check_workflow_content(path)
+    gl_info = _check_gitlab_ci_content(path)
+    # Merge both forge formats so GitLab content is not scored as absent
+    wf_info = {
+        "test": gh_info["test"] or gl_info["test"],
+        "lint": gh_info["lint"] or gl_info["lint"],
+        "matrix": gh_info["matrix"] or gl_info["matrix"],
+    }
+    has_dependabot = _has_dependency_bot(path)
 
     details = [
         f"CI system: {', '.join(found_ci)}",
         f"Test job: {'yes' if wf_info['test'] else 'no'}",
         f"Lint job: {'yes' if wf_info['lint'] else 'no'}",
         f"Matrix builds: {'yes' if wf_info['matrix'] else 'no'}",
-        f"Dependabot: {'yes' if has_dependabot else 'no'}",
+        f"Dependency bot (Dependabot/Renovate): {'yes' if has_dependabot else 'no'}",
     ]
 
     score = sum([wf_info["test"], wf_info["lint"], has_dependabot])
@@ -71,7 +105,7 @@ def check_cicd(repo_path: str) -> CheckResult:
     if not wf_info["lint"]:
         recs.append("Add a linting job (ruff for Python, eslint for JS)")
     if not has_dependabot:
-        recs.append("Add Dependabot for dependency updates (.github/dependabot.yml)")
+        recs.append("Add Dependabot (.github/dependabot.yml) or Renovate (renovate.json) for dependency updates")
 
     if score >= 3:
         status = CheckStatus.PASS

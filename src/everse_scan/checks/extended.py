@@ -222,7 +222,7 @@ def check_api_docs(repo_path: str) -> CheckResult:
             found.append(f)
             details.append(f"{f} found")
 
-    docs_dirs = [path / "docs", path / "doc"]
+    docs_dirs = [path / "docs", path / "doc", path / "documentation", path / "documentations"]
     for d in docs_dirs:
         if d.is_dir():
             for p in d.iterdir():
@@ -332,26 +332,27 @@ def check_code_of_conduct(repo_path: str) -> CheckResult:
 def check_issue_templates(repo_path: str) -> CheckResult:
     """Check for issue templates."""
     path = Path(repo_path)
-    template_dir = path / ".github" / "ISSUE_TEMPLATE"
-    if template_dir.is_dir():
-        templates = (
-            list(template_dir.glob("*.md")) + list(template_dir.glob("*.yml")) + list(template_dir.glob("*.yaml"))
-        )
-        if templates:
-            return CheckResult(
-                name="Issue templates",
-                status=CheckStatus.PASS,
-                message=f"Issue templates found: {len(templates)}",
-                details=[f"Templates: {', '.join(t.name for t in templates)}"],
-                rsqkit_url="",
-                category="documentation",
+    # GitHub uses .github/ISSUE_TEMPLATE, GitLab uses .gitlab/issue_templates
+    for template_dir in [path / ".github" / "ISSUE_TEMPLATE", path / ".gitlab" / "issue_templates"]:
+        if template_dir.is_dir():
+            templates = (
+                list(template_dir.glob("*.md")) + list(template_dir.glob("*.yml")) + list(template_dir.glob("*.yaml"))
             )
+            if templates:
+                return CheckResult(
+                    name="Issue templates",
+                    status=CheckStatus.PASS,
+                    message=f"Issue templates found: {len(templates)}",
+                    details=[f"Templates: {', '.join(t.name for t in templates)}"],
+                    rsqkit_url="",
+                    category="documentation",
+                )
     return CheckResult(
         name="Issue templates",
         status=CheckStatus.WARN,
         message="No issue templates found",
-        details=["No .github/ISSUE_TEMPLATE/ directory or templates"],
-        recommendations=["Add issue templates in .github/ISSUE_TEMPLATE/"],
+        details=["No .github/ISSUE_TEMPLATE/ or .gitlab/issue_templates/ directory"],
+        recommendations=["Add issue templates in .github/ISSUE_TEMPLATE/ or .gitlab/issue_templates/"],
         rsqkit_url="",
         category="documentation",
     )
@@ -419,6 +420,8 @@ def check_data_management(repo_path: str) -> CheckResult:
         "data_management.md",
         "docs/dmp.md",
         "docs/DATA_MANAGEMENT_PLAN.md",
+        "documentation/dmp.md",
+        "documentation/DATA_MANAGEMENT_PLAN.md",
     ]
 
     for f in dmp_files:
@@ -465,6 +468,7 @@ def check_reproducibility_checklist(repo_path: str) -> CheckResult:
         "CHECKLIST.md",
         "checklist.md",
         "docs/reproducibility.md",
+        "documentation/reproducibility.md",
     ]
 
     for f in checklist_files:
@@ -600,6 +604,7 @@ def check_sustainability_plan(repo_path: str) -> CheckResult:
         "sustainability_plan.md",
         "docs/sustainability.md",
         "SUSTAINABILITY_PLAN.md",
+        "documentation/sustainability.md",
     ]
 
     for f in plan_files:
@@ -716,6 +721,7 @@ def check_quality_model(repo_path: str) -> CheckResult:
         "quality_model.md",
         "docs/quality.md",
         ".github/quality.yml",
+        "documentation/quality.md",
     ]
 
     for f in quality_files:

@@ -23,7 +23,7 @@ usage: everse-scan [-h] [--format {json,markdown,both}] [-o PREFIX]
 
 | Argument | Description |
 |---|---|
-| `TARGET` | Path to a local repository or a GitHub URL (`https://github.com/org/repo`) |
+| `TARGET` | Path to a local repository or a GitHub/GitLab URL (`https://github.com/org/repo`, `https://gitlab.example.org/group/repo`) |
 
 ### Options
 
@@ -52,6 +52,9 @@ everse-scan ./my-repo
 
 # GitHub repository scan, JSON output to file
 everse-scan https://github.com/org/repo --format json -o scan
+
+# GitLab repository scan (self-hosted, e.g. gitlab.in2p3.fr)
+everse-scan https://gitlab.in2p3.fr/sens/CLASS --format markdown -o scan
 
 # RSE-adapted report with all FAIR integrations
 everse-scan ./my-repo --role rse --use

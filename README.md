@@ -6,7 +6,7 @@ Scan your research software repository and get a structured quality and FAIR com
 
 ![Version](https://img.shields.io/badge/version-0.5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-108%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/python-3.12%20to%203.13-blue)
 [![CI](https://github.com/hbacard/everse-scan/actions/workflows/ci.yml/badge.svg)](https://github.com/hbacard/everse-scan/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24243032.svg)](https://doi.org/10.5281/zenodo.24243032)
@@ -72,10 +72,11 @@ everse-scan ./my-repo --format json
 everse-scan ./my-repo --format both -o report
 ```
 
-### Scan a GitHub repository
+### Scan a GitHub or GitLab repository
 
 ```bash
 everse-scan https://github.com/org/repo
+everse-scan https://gitlab.in2p3.fr/sens/CLASS
 ```
 
 ### Role-adaptive reports

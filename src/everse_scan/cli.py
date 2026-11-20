@@ -81,7 +81,7 @@ def main(argv: list[str] | None = None) -> int:
         clone_path = str(Path(tmp_dir) / repo_name)
         try:
             subprocess.run(
-                ["git", "clone", "--depth", "1", repo_path, clone_path],
+                ["git", "clone", repo_path, clone_path],
                 check=True,
                 capture_output=True,
                 timeout=60,

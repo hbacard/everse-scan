@@ -36,7 +36,20 @@ SECRET_FILE_EXTS = {
     ".go",
     ".rs",
 }
-IGNORE_DIRS = {".git", ".venv", "venv", "node_modules", "__pycache__", "dist", "build"}
+IGNORE_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    "dist",
+    "build",
+    # Generated/build/IDE output that would skew secret scanning
+    "doxygen",
+    "cmake-build-debug",
+    "cmake-build-release",
+    ".idea",
+}
 
 
 def _scan_secrets(path: Path) -> list[tuple[str, str]]:
@@ -61,9 +74,20 @@ def _scan_secrets(path: Path) -> list[tuple[str, str]]:
 def check_security(repo_path: str) -> CheckResult:
     path = Path(repo_path)
     secrets = _scan_secrets(path)
-    has_dependabot = (path / ".github" / "dependabot.yml").exists()
+    # Dependabot on GitHub, Renovate on GitLab (or GitHub)
+    has_dependabot = (
+        (path / ".github" / "dependabot.yml").exists()
+        or (path / "renovate.json").exists()
+        or (path / ".renovaterc").exists()
+        or (path / ".renovaterc.json").exists()
+    )
     has_codeowners = False
-    for p in [path / ".github" / "CODEOWNERS", path / "CODEOWNERS"]:
+    for p in [
+        path / ".github" / "CODEOWNERS",
+        path / "CODEOWNERS",
+        path / "docs" / "CODEOWNERS",
+        path / ".gitlab" / "CODEOWNERS",
+    ]:
         if p.exists():
             has_codeowners = True
             break
@@ -71,7 +95,7 @@ def check_security(repo_path: str) -> CheckResult:
 
     details = [
         f"Secrets found: {len(secrets)}",
-        f"Dependabot: {'yes' if has_dependabot else 'no'}",
+        f"Dependency bot (Dependabot/Renovate): {'yes' if has_dependabot else 'no'}",
         f"CODEOWNERS: {'yes' if has_codeowners else 'no'}",
         f"Security policy: {'yes' if has_security_policy else 'no'}",
     ]
@@ -106,7 +130,9 @@ def check_security(repo_path: str) -> CheckResult:
 
     recs = []
     if not has_dependabot:
-        recs.append("Add Dependabot for dependency vulnerability scanning")
+        recs.append(
+            "Add Dependabot (.github/dependabot.yml) or Renovate (renovate.json) for dependency vulnerability scanning"
+        )
     if not has_codeowners:
         recs.append("Add a CODEOWNERS file for review accountability")
     if not has_security_policy:
