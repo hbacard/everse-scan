@@ -24,7 +24,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "repo",
-        help="Path to the repository to scan (local path or GitHub URL)",
+        help="Path to the repository to scan (local path or git URL)",
     )
     parser.add_argument(
         "--format",
@@ -71,8 +71,8 @@ def main(argv: list[str] | None = None) -> int:
 
     repo_path = args.repo
 
-    # Handle GitHub URLs
-    if repo_path.startswith(("https://github.com/", "git@github.com:")):
+    # Handle remote git URLs (GitHub, GitLab, self-hosted, etc.)
+    if "://" in repo_path or repo_path.startswith("git@"):
         import subprocess
         import tempfile
 
